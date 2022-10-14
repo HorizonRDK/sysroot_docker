@@ -38,6 +38,9 @@ extern "C" {
 
 #include "uvc.h"
 
+/* hidden symbols for some native api */
+#define NATIVE_ATTR_ __attribute__((visibility ("hidden")))
+
 /* below h265 definition in kernel include/uapi/linux/videodev2.h,
  * but user app use toolchain's include file
  */
@@ -177,7 +180,7 @@ struct uvc_device {
 	int uvc_fd;
 	int is_streaming;
 	int run_standalone;
-	char *uvc_devname;
+	char uvc_devname[128];
 
 	/* uvc control request specific */
 
@@ -215,6 +218,7 @@ struct uvc_device {
 	int maxpkt;
 	int maxpkt_quirk;
 	enum usb_device_speed speed;
+	enum usb_device_speed conn_speed;
 
 	/* h264 sequence header (special case)*/
 	char sps_pps[128];
@@ -257,32 +261,32 @@ struct uvc_context {
 /* ---------------------------------------------------------------------------
  * V4L2 generic stuff
  */
-int v4l2_open(struct v4l2_device **v4l2, char *devname,
-	      struct v4l2_format *s_fmt);
-int v4l2_reqbufs(struct v4l2_device *dev, int nbufs);
-int v4l2_start_capturing(struct v4l2_device *dev);
-int v4l2_process_data(struct v4l2_device *dev);
-int v4l2_stop_capturing(struct v4l2_device *dev);
-int v4l2_uninit_device(struct v4l2_device *dev);
-void v4l2_close(struct v4l2_device *dev);
+NATIVE_ATTR_ int v4l2_open(struct v4l2_device **v4l2, char *devname,
+			struct v4l2_format *s_fmt);
+NATIVE_ATTR_ int v4l2_reqbufs(struct v4l2_device *dev, int nbufs);
+NATIVE_ATTR_ int v4l2_start_capturing(struct v4l2_device *dev);
+NATIVE_ATTR_ int v4l2_process_data(struct v4l2_device *dev);
+NATIVE_ATTR_ int v4l2_stop_capturing(struct v4l2_device *dev);
+NATIVE_ATTR_ int v4l2_uninit_device(struct v4l2_device *dev);
+NATIVE_ATTR_ void v4l2_close(struct v4l2_device *dev);
 
 /* ---------------------------------------------------------------------------
  * UVC generic stuff
  */
-int uvc_open(struct uvc_device **uvc, char *devname);
-int uvc_video_set_format(struct uvc_device *dev);
-void uvc_events_init(struct uvc_device *dev);
-int uvc_video_reqbufs(struct uvc_device *dev, int nbufs);
-int uvc_video_stream(struct uvc_device *dev, int enable);
-void uvc_events_process(struct uvc_device *dev);
-int uvc_video_process(struct uvc_device *dev);
-int uvc_uninit_device(struct uvc_device *dev);
-void uvc_close(struct uvc_device *dev);
-int uvc_set_maxpkt_quirk(struct uvc_device *dev);
+NATIVE_ATTR_ int uvc_open(struct uvc_device **uvc, char *devname);
+NATIVE_ATTR_ int uvc_video_set_format(struct uvc_device *dev);
+NATIVE_ATTR_ void uvc_events_init(struct uvc_device *dev);
+NATIVE_ATTR_ int uvc_video_reqbufs(struct uvc_device *dev, int nbufs);
+NATIVE_ATTR_ int uvc_video_stream(struct uvc_device *dev, int enable);
+NATIVE_ATTR_ void uvc_events_process(struct uvc_device *dev);
+NATIVE_ATTR_ int uvc_video_process(struct uvc_device *dev);
+NATIVE_ATTR_ int uvc_uninit_device(struct uvc_device *dev);
+NATIVE_ATTR_ void uvc_close(struct uvc_device *dev);
+NATIVE_ATTR_ int uvc_set_maxpkt_quirk(struct uvc_device *dev);
 /* ---------------------------------------------------------------------------
  * Some helper function
  */
-char *fcc_to_string(unsigned int fcc);
+const char *fcc_to_string(unsigned int fcc);
 
 #ifdef __cplusplus
 }
