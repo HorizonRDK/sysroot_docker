@@ -89,6 +89,8 @@ enum hdmi_mode {
 	MODE_720P25,
 	MODE_720P59_94,
 	MODE_720P29_97,
+	MODE_704x576_25,
+        MODE_704x480_30,
 	MODE_USER, /* User timing. */
 	MODE_BUTT
 };

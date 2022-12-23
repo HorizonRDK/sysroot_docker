@@ -109,9 +109,9 @@ typedef enum HB_VIN_DEV_INTF_MODE_E {
 } VIN_DEV_INTF_MODE_E;
 
 typedef struct HB_VIN_DEV_SIZE_S {
-	uint32_t  format;   
-	uint32_t  width;    
-	uint32_t  height;   
+	uint32_t  format;
+	uint32_t  width;
+	uint32_t  height;
 	uint32_t  pix_length;  //Length of each pixel
 } VIN_DEV_SIZE_S;
 
@@ -172,6 +172,13 @@ typedef struct HB_VIN_DEV_ATTR_EX_S {
 	uint32_t precision;
 }VIN_DEV_ATTR_EX_S;
 
+typedef struct HB_VIN_IAR_ATTR_S {
+	uint32_t  enable;  // IAR enable, 0 is off, 1 is enabled
+	uint32_t  enable_frame_id;
+	uint32_t  set_init_frame_id;
+	uint32_t  enable_bypass;
+} VIN_IAR_ATTR_S;
+
 typedef struct HB_VIN_DEV_ATTR_S {
 	VIN_DEV_SIZE_S        stSize;
 	union
@@ -182,6 +189,7 @@ typedef struct HB_VIN_DEV_ATTR_S {
 	VIN_DEV_INPUT_DDR_ATTR_S DdrIspAttr;
 	VIN_DEV_OUTPUT_DDR_S outDdrAttr;
 	VIN_DEV_OUTPUT_ISP_S outIspAttr;
+	VIN_IAR_ATTR_S       iarAttr;
 }VIN_DEV_ATTR_S;
 
 typedef struct HB_VIN_PIPE_SIZE_S {
@@ -366,6 +374,12 @@ typedef struct HB_VIN_PIPE_SNS_TABLE_S {
 	unsigned char calibPath[HB_VIN_PIPE_CALIB_PATH_LEGNTH];
 } VIN_PIPE_SNS_TABLE_S;
 
+typedef struct HB_VIN_FRAME_RATE_CTRL_S {
+	uint32_t	srcFrameRate;
+	uint32_t	dstFrameRate;
+	uint32_t	keepRaw;
+} VIN_FRAME_RATE_CTRL_S;
+
 extern int HB_VIN_SetDevAttr(uint32_t devId,
 			const VIN_DEV_ATTR_S *stVinDevAttr);
 extern int HB_VIN_GetDevAttr(uint32_t devId,
@@ -443,6 +457,8 @@ extern int HB_VIN_SwPipeSnstable(uint32_t pipeId,
 	VIN_PIPE_SNS_TABLE_S *snsTable);
 
 extern int HB_VIN_CtrlPipeMirror(uint32_t pipeId, uint8_t on);
+int32_t HB_VIN_SetDevFrameRate(uint32_t devId,
+								VIN_FRAME_RATE_CTRL_S *frameRate);
 #ifdef __cplusplus
 }
 #endif

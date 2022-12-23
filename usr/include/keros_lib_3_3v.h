@@ -65,7 +65,7 @@ extern "C"
 	extern uint8_t keros_read_data( uint16_t sub_addr, int read_len, uint8_t * r_data );
 	extern uint8_t keros_write_data( uint16_t sub_addr, uint8_t * w_data, int write_len );
 	extern void keros_delay( uint32_t wait_time );
-	extern uint8_t keros_power_on( void );
+	extern int keros_power_on( void );
 
 	/**
 	 * name : uint8_t keros_init_3_3v(uint8_t *r_seral_data)

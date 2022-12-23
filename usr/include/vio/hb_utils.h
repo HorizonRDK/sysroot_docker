@@ -134,5 +134,6 @@ int32_t sem_timedwait_msecs(sem_t *sem, int64_t msecs);
 int32_t sem_timedwait_relative(sem_t *sem, struct timespec *monotime);
 int hb_dump_stat_info(int pipe);
 void sem_wait_cond(sem_t *sem);
+int64_t get_monotime_ms(void);
 
 #endif //HB_X2A_VIO_HB_UTILS_H

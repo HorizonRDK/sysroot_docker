@@ -550,6 +550,8 @@ int hb_vio_dump_frame_state(uint32_t pipe);
 int hb_vio_ipi_reset(uint32_t pipeline_id);
 int hb_vio_mipi_hw_cfg_reset(uint32_t pipeline_id);
 
+int hb_vio_switch_pipe(uint32_t pipemask, uint32_t enable);
+
 #ifdef __cplusplus
 }
 #endif

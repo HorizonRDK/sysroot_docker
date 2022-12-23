@@ -12,6 +12,7 @@ extern "C" {
 
 #include <stdint.h>
 #define MIPIHOST_CHANNEL_NUM (4)
+#define MIPIDEV_CHANNEL_NUM  (4)
 #define GPIO_NUM 8
 #define LPWM_PIN_NUM  4
 
@@ -113,7 +114,20 @@ typedef struct HB_MIPI_SENSOR_INFO_S {
 }MIPI_SENSOR_INFO_S;
 
 typedef struct HB_MIPI_DEV_CFG_S {
-	uint32_t  enable;
+	uint16_t  lane;
+	uint16_t  datatype;
+	uint16_t  fps;
+	uint16_t  mclk;
+	uint16_t  mipiclk;
+	uint16_t  width;
+	uint16_t  height;
+	uint16_t  linelenth;
+	uint16_t  framelenth;
+	uint16_t  settle;
+	uint16_t  vpg;
+	uint16_t  ipi_lines;
+	uint16_t  channel_num;
+	uint16_t  channel_sel[MIPIDEV_CHANNEL_NUM];
 } MIPI_DEV_CFG_S;
 
 typedef struct HB_MIPI_HOST_CFG_S {
@@ -134,6 +148,7 @@ typedef struct HB_MIPI_HOST_CFG_S {
 typedef struct HB_MIPI_ATTR_S {
 	MIPI_HOST_CFG_S mipi_host_cfg;
 	uint32_t  dev_enable;
+	MIPI_DEV_CFG_S  mipi_dev_cfg;
 } MIPI_ATTR_S;
 
 extern int HB_MIPI_SetBus(MIPI_SENSOR_INFO_S *snsInfo, uint32_t busNum);

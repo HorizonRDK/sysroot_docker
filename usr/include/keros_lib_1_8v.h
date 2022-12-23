@@ -108,7 +108,7 @@ extern "C"
 	extern uint8_t keros_read_data( uint16_t sub_addr, int read_len, uint8_t * r_data );
 	extern uint8_t keros_write_data( uint16_t sub_addr, uint8_t * w_data, int write_len );
 	extern void keros_delay( uint32_t wait_time );
-	extern uint8_t keros_power_on( void );
+	extern int keros_power_on( void );
 
 	/**
 	 * name : uint8_t keros_init_1_8v(uint8_t *r_seral_data)
@@ -145,7 +145,7 @@ extern "C"
 	 *
 	 */
 
-	uint8_t keros_eeprom_read_1_8v( uint32_t password, uint8_t page, uint8_t *r_data, uint8_t encrytion );
+	uint8_t keros_eeprom_read_1_8v( uint32_t password, int page, uint8_t *r_data, uint8_t encrytion );
 
 	/**
 	 * name : uint8_t keros_eeprom_write_1_8v( uint8_t page, uint8_t *w_data, uint8_t encrytion )

@@ -45,6 +45,7 @@ enum efuse_debug {
 	JTAG,
 	VERIFY_UBOOT,
 	VERIFY_BPU,
+        SEL_KEY,
 	DEBUG_ALL
 };
 
