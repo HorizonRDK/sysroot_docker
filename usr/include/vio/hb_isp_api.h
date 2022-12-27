@@ -773,6 +773,13 @@ typedef struct HB_ISP_GAMMA_THRESHOLD {
 	uint32_t u32GammaThreshold[3];
 } ISP_GAMMA_THRESHOLD;
 
+typedef struct HB_ISP_5BIN_HIST {
+	uint16_t u16HistThresh01;
+	uint16_t u16HistThresh12;
+	uint16_t u16HistThresh23;
+	uint16_t u16HistThresh34;
+} ISP_5BIN_HIST;
+
 extern int HB_ISP_SetSkyCtrlAttr(uint8_t pipeId, const ISP_SKY_PARAM_S *pstSkyCtrlAttr);
 extern int HB_ISP_GetSkyCtrlAttr(uint8_t pipeId, ISP_SKY_PARAM_S *pstSkyCtrlAttr);
 extern int HB_ISP_SetMixLightAttr(uint8_t pipeId, const ISP_MIX_LIGHT_PARAM_S *pstMixLightAttr);
@@ -815,6 +822,8 @@ extern int HB_ISP_SetGammaEv2(uint8_t pipeId, const ISP_GAMMA_EV2 *pstGammaEv2);
 extern int HB_ISP_GetGammaEv2(uint8_t pipeId, ISP_GAMMA_EV2 *pstGammaEv2);
 extern int HB_ISP_SetGammaThreshold(uint8_t pipeId, const ISP_GAMMA_THRESHOLD *pstGammaThd);
 extern int HB_ISP_GetGammaThreshold(uint8_t pipeId, ISP_GAMMA_THRESHOLD *pstGammaThd);
+extern int HB_ISP_Set_AE_5bin_Hist(uint8_t pipeId, const ISP_5BIN_HIST * pAe5binHist);
+extern int HB_ISP_Get_AE_5bin_Hist(uint8_t pipeId, ISP_5BIN_HIST * pAe5binHist);
 
 
 typedef struct HB_ISP_WDR_OFFSET_S {

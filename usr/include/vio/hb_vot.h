@@ -119,6 +119,7 @@ int hb_disp_mipi_panel_init_begin(void);
 int HB_VOT_MipiPanelInitEnd(void);
 int HB_VOT_ShutDownHDMI(void);
 int HB_VOT_StartHDMI(void);
+int HB_VOT_SetPause(int32_t pause);
 #ifdef __cplusplus
 #if __cplusplus
 }

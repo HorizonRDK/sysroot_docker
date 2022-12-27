@@ -19,7 +19,7 @@
 struct keros_i2c_msg {
     unsigned short addr;
     unsigned short flags;
-    unsigned short len;
+    int len;
     unsigned char *buf;
 };
 

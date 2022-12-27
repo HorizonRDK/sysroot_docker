@@ -23,6 +23,6 @@ void keros_interface_i2c_exit(void);
 uint8_t keros_read_data(uint16_t sub_addr, int read_len, uint8_t *r_data);
 uint8_t keros_write_data(uint16_t sub_addr, uint8_t *w_data, int write_len);
 void keros_delay(uint32_t wait_time);
-uint8_t keros_power_on(void);
+int keros_power_on(void);
 
 #endif /* __KEROS_INTERFACE_H_ */

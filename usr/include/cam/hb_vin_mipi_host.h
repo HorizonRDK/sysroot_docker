@@ -25,6 +25,7 @@ extern "C"
 
 int hb_vin_mipi_host_start(entry_t *e);
 int hb_vin_mipi_host_stop(entry_t *e);
+int hb_vin_mipi_host_open(entry_t *e);
 int hb_vin_mipi_host_init(entry_t *e);
 int hb_vin_mipi_host_deinit(entry_t *e);
 int hb_vin_mipi_host_parser_config(void *root, entry_t *e);

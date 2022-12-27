@@ -48,8 +48,7 @@ extern "C" {
 #define IMAGE_MAX_WIDTH 4096
 #define IMAGE_MAX_HEIGHT 4096
 #define RGN_MIN_WIDTH 32
-#define RGN_SP_MIN_WIDTH 2
-#define RGN_MOSAIC_MIN_WIDTH 16
+#define RGN_SW_MIN_WIDTH 16
 #define RGN_MIN_HEIGHT 2
 #define STA_MIN_WIDTH 2
 #define STA_MIN_HEIGHT 2

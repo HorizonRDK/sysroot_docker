@@ -14,7 +14,7 @@ extern "C" {
 
 #define BPU_PLAT_VERSION_MAJOR 1
 #define BPU_PLAT_VERSION_MINOR 3
-#define BPU_PLAT_VERSION_PATCH 1
+#define BPU_PLAT_VERSION_PATCH 3
 
 int32_t hb_bpu_version(uint32_t *major, uint32_t *minor, uint32_t *patch);
 
@@ -207,6 +207,17 @@ int32_t hb_bpu_set_clk(uint32_t core_index, uint64_t val);
 uint64_t hb_bpu_get_clk(uint32_t core_index);
 int32_t hb_bpu_get_total_level(uint32_t core_index);
 int32_t hb_bpu_get_cur_level(uint32_t core_index);
+/**
+ * hb_bpu_core_estimate_loading() - estimate total bpu core buffered
+ * tasks process time
+ *
+ * @core_index: bpu core index
+ * @prio_level: the priority level
+ *
+ *
+ * Return: <0: error; >= 0: estimate time(us)
+ */
+int64_t hb_bpu_core_estimate_loading(uint32_t core_index, uint32_t prio_level);
 
 #ifdef __cplusplus
 }
