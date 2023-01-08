@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib/aarch64-linux-gnu
+includedir=${prefix}/include
+
+Name: libzmq
+Description: 0MQ c++ library
+Version: 4.3.2
+Libs: -L${libdir} -lzmq
+Libs.private: -lstdc++  -lpthread -lrt
+Requires.private:  krb5-gssapi libsodium openpgm-5.2 >= 5.2 norm
+Cflags: -I${includedir} 
