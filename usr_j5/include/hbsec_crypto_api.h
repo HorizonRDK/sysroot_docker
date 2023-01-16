@@ -10,10 +10,10 @@ struct hbsec_ch {
 
 struct hbsec_ch_conf {
 	int cipher_mode; int hash_mode;	// cipher and hash (see elpspaccmodes.h)
-	int encrypt;					// non-zero for encrypt (sign) modes
+	int encrypt;					// non-zero for encrypt (sign) modes,zero for decrypt modes
 	int icvmode;					// ICV mode (see elpspaccmodes.h)
 	int icvlen;						// length of ICV, 0 for default length (algorithm dependent)
-	int aad_copy;					// non-zero to copy AAD to dst buffer
+	int aad_copy;					// non-zero to copy AAD to dst buffer,zero to copy
 	const void *ckey; int ckeylen; const void *civ; int civlen;	// cipher key and IVs
 	const void *hkey; int hkeylen; const void *hiv; int hivlen;	// hash key and IVs (if any)
 };

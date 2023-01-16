@@ -4,8 +4,8 @@
  *                   All rights reserved.
  *************************************************************************/
 
-#ifndef __HBMEM_H__
-#define __HBMEM_H__
+#ifndef HBMEM_H
+#define HBMEM_H
 
 #ifdef __cplusplus
 extern "C" {

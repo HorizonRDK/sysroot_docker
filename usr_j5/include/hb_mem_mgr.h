@@ -120,6 +120,8 @@ typedef enum mem_usage_t {
 	HB_MEM_USAGE_HW_JPEG_CODEC           = 0x00020000LL,
 	/* buffer will be used as vdsp buffer */
 	HB_MEM_USAGE_HW_VDSP                 = 0x00040000LL,
+	/* buffer will be used as geometric distortion correction out buffer */
+	HB_MEM_USAGE_HW_GDC_OUT              = 0x00080000LL,
 	/* mask for the hw flag */
 	HB_MEM_USAGE_HW_MASK                 = 0x00FFFF00LL,
 
@@ -140,7 +142,7 @@ typedef enum mem_usage_t {
 	  *MAP_INITIALIZED has high priority. If you don't choose the tow flag,
 	  DMA heap will defaultly be initialized, RESERVED and SRAM heap will
 	  be uninitialized.*/
-	HB_MEM_USAGE_TRIVIAL_MASK            = 0xFF000000LL,
+	HB_MEM_USAGE_TRIVIAL_MASK            = 0xFF000000LL,/* PRQA S 0646 ++ */
 
 	/* implementation-specific private usage flags */
 	/* buffer will be allocated from CMA heap in linux system */
@@ -156,7 +158,7 @@ typedef enum mem_usage_t {
 	HB_MEM_USAGE_PRIV_HEAP_2_RESERVERD   = 0x400000000LL, // deprecated
 	HB_MEM_USAGE_PRIV_HEAP_2_RESERVED    = 0x400000000LL,
 	/* mask for the private flag */
-	HB_MEM_USAGE_PRIV_MASK               = 0xF00000000LL,
+	HB_MEM_USAGE_PRIV_MASK               = 0xF00000000LL,/* PRQA S 0646 -- */
 } mem_usage_t;
 
 /**

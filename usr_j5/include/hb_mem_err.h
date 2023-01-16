@@ -36,24 +36,24 @@ extern "C" {
 #define HB_MEM_ERR_MAX_STR_SIZE 256
 
 /* Unknown Error */
-#define HB_MEM_ERR_UNKNOWN                           0xFF000001
-#define HB_MEM_ERR_INVALID_PARAMS                    0xFF000002
-#define HB_MEM_ERR_INVALID_FD                        0xFF000003
-#define HB_MEM_ERR_INVALID_VADDR                     0xFF000004
-#define HB_MEM_ERR_INSUFFICIENT_MEM                  0xFF000005
-#define HB_MEM_ERR_TOO_MANY_FD                       0xFF000006
-#define HB_MEM_ERR_TIMEOUT                           0xFF000007
-#define HB_MEM_ERR_MODULE_NOT_FOUND                  0xFF000008
-#define HB_MEM_ERR_MODULE_OPEN_FAIL                  0xFF000009
-#define HB_MEM_ERR_QUEUE_NOT_FOUND                   0xFF00000A
-#define HB_MEM_ERR_QUEUE_DESTROYED                   0xFF00000B
-#define HB_MEM_ERR_QUEUE_WRONG_SLOT                  0xFF00000C
-#define HB_MEM_ERR_QUEUE_NO_AVAILABLE_SLOT           0xFF00000D
-#define HB_MEM_ERR_QUEUE_ALREADY_EXIST               0xFF00000E
-#define HB_MEM_ERR_POOL_NOT_FOUND                    0xFF00000F
-#define HB_MEM_ERR_POOL_DESTROYED                    0xFF000010
-#define HB_MEM_ERR_POOL_BUSY                         0xFF000011
-#define HB_MEM_ERR_WAIT_SHARE_FAILURE                0xFF000012
+#define HB_MEM_ERR_UNKNOWN                           (-16777215) // 0xFF000001
+#define HB_MEM_ERR_INVALID_PARAMS                    (-16777214) // 0xFF000002
+#define HB_MEM_ERR_INVALID_FD                        (-16777213) // 0xFF000003
+#define HB_MEM_ERR_INVALID_VADDR                     (-16777212) // 0xFF000004
+#define HB_MEM_ERR_INSUFFICIENT_MEM                  (-16777211) // 0xFF000005
+#define HB_MEM_ERR_TOO_MANY_FD                       (-16777210) // 0xFF000006
+#define HB_MEM_ERR_TIMEOUT                           (-16777209) // 0xFF000007
+#define HB_MEM_ERR_MODULE_NOT_FOUND                  (-16777208) // 0xFF000008
+#define HB_MEM_ERR_MODULE_OPEN_FAIL                  (-16777207) // 0xFF000009
+#define HB_MEM_ERR_QUEUE_NOT_FOUND                   (-16777206) // 0xFF00000A
+#define HB_MEM_ERR_QUEUE_DESTROYED                   (-16777205) // 0xFF00000B
+#define HB_MEM_ERR_QUEUE_WRONG_SLOT                  (-16777204) // 0xFF00000C
+#define HB_MEM_ERR_QUEUE_NO_AVAILABLE_SLOT           (-16777203) // 0xFF00000D
+#define HB_MEM_ERR_QUEUE_ALREADY_EXIST               (-16777202) // 0xFF00000E
+#define HB_MEM_ERR_POOL_NOT_FOUND                    (-16777201) // 0xFF00000F
+#define HB_MEM_ERR_POOL_DESTROYED                    (-16777200) // 0xFF000010
+#define HB_MEM_ERR_POOL_BUSY                         (-16777199) // 0xFF000011
+#define HB_MEM_ERR_WAIT_SHARE_FAILURE                (-16777198) // 0xFF000012
 
 /**
  * Query a description of the HB_MEM_ERR code.
