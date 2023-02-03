@@ -1,0 +1,13 @@
+#ifndef HLOG_LOG_VERSION_H_
+#define HLOG_LOG_VERSION_H_
+
+
+#define LOG_VERSION_MAJOR  1
+#define LOG_VERSION_MINOR  1
+#define LOG_VERSION_PATCH  3
+#define LOG_VERSION_SUFFIX "vanilla-2023-01-03-14:13:54"
+
+#define LOG_VERSION_STRING "1.1.3-vanilla-2023-01-03-14:13:54"
+
+
+#endif

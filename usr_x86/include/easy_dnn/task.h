@@ -18,12 +18,9 @@ namespace hobot {
 namespace easy_dnn {
 
 class DNNInferCtrlParam;
-class DNNResizeCtrlParam;
 class Model;
 class InputDescription;
-class InputProcessor;
 class OutputDescription;
-class OutputParser;
 class DNNInput;
 class DNNResult;
 class DNNTensor;
@@ -45,13 +42,14 @@ class Task {
   /**
    * Get estimate inference time. It consists of two periods， pending time
    *    (period from submission to execution) and execute time (period from
-   *    execution to finish)
-   * @param[out] estimate_infer_time
-   * @param[in] include_pending_time
+   *    execution to finish), depends on task control param,
+   *    and rois(for ModelRoiInferTask)
+   * @param[out] estimate_infer_time, time of us.
+   * @param[in] ctrl_param
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t GetEstimateInferTime(int32_t &estimate_infer_time,
-                                       bool include_pending_time) = 0;
+                                       DNNInferCtrlParam &ctrl_param) = 0;
 
   /**
    * Run task
@@ -61,7 +59,7 @@ class Task {
 
   /**
    * Wait task infer done
-   * @param[in] timeout
+   * @param[in] timeout, timeout of ms
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t WaitInferDone(int32_t timeout) = 0;
@@ -71,6 +69,26 @@ class Task {
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t ParseOutput() = 0;
+
+  /**
+   * Count the time of the process of running task
+   * @param[out] execute_time, time of us.
+   * @return 0 if success, return defined error code otherwise
+   */
+  virtual int32_t GetExecuteTime(int32_t &execute_time) = 0;
+
+  /**
+   * Indicate all outputs have been retridved, the task is ready for set
+   * in/output, run inference etc again.
+   * @return 0 if success, return defined error code otherwise
+   */
+  virtual int32_t GetOutputsDone() = 0;
+
+  /**
+   * Terminate current task, release task resource in proper time
+   * @return 0 if success, return defined error code otherwise
+   * */
+  virtual int32_t Terminate() = 0;
 
   virtual ~Task() = default;
 };
@@ -107,22 +125,13 @@ class ModelTask : public Task {
       std::vector<std::shared_ptr<InputDescription>> &input_descs) = 0;
 
   /**
-   * Set one input processor
+   * Get input description
+   * @param[out] input_desc
    * @param[in] input_index
-   * @param[in] input_processor
    * @return 0 if success, return defined error code otherwise
    */
-  virtual int32_t SetInputProcessor(
-      int32_t input_index,
-      std::shared_ptr<InputProcessor> &input_processor) = 0;
-
-  /**
-   * Set input processors
-   * @param[in] input_processors
-   * @return 0 if success, return defined error code otherwise
-   */
-  virtual int32_t SetInputProcessors(
-      std::vector<std::shared_ptr<InputProcessor>> &input_processors) = 0;
+  virtual int32_t GetInputDescription(
+      std::shared_ptr<InputDescription> &input_desc, int32_t input_index) = 0;
 
   /**
    * Set one output description
@@ -141,21 +150,14 @@ class ModelTask : public Task {
       std::vector<std::shared_ptr<OutputDescription>> &output_descs) = 0;
 
   /**
-   * Set one output parser
+   * Get output description
+   * @param[out] output_desc
    * @param[in] output_index
-   * @param[in] output_parser
    * @return 0 if success, return defined error code otherwise
    */
-  virtual int32_t SetOutputParser(
-      int32_t output_index, std::shared_ptr<OutputParser> &output_parser) = 0;
-
-  /**
-   * Set output parsers
-   * @param[in] output_parsers
-   * @return 0 if success, return defined error code otherwise
-   */
-  virtual int32_t SetOutputParsers(
-      std::vector<std::shared_ptr<OutputParser>> &output_parsers) = 0;
+  virtual int32_t GetOutputDescription(
+      std::shared_ptr<OutputDescription> &output_desc,
+      int32_t output_index) = 0;
 };
 
 class ModelInferTask : virtual public ModelTask {
@@ -242,7 +244,7 @@ class ModelInferTask : virtual public ModelTask {
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t SetOutputs(
-      std::vector<std::shared_ptr<DNNResult>> &output) = 0;
+      std::vector<std::shared_ptr<DNNResult>> &outputs) = 0;
 
   /**
    * Get one output result
@@ -260,13 +262,6 @@ class ModelInferTask : virtual public ModelTask {
    */
   virtual int32_t GetOutputs(
       std::vector<std::shared_ptr<DNNResult>> &outputs) = 0;
-
-  /**
-   * Indicate all outputs have been retridved, the task is ready for set
-   * in/output, run inference etc again.
-   * @return 0 if success, return defined error code otherwise
-   */
-  virtual int32_t GetOutputsDone() = 0;
 };
 
 class ModelRoiInferTask : virtual public ModelTask {
@@ -373,10 +368,9 @@ class ModelRoiInferTask : virtual public ModelTask {
    * @param output_tensor
    * @return 0 if success, return defined error code otherwise
    */
-  virtual int32_t GetOutputTensor(
-      int32_t roi_index,
-      int32_t output_index,
-      std::shared_ptr<DNNTensor> &output_tensor) = 0;
+  virtual int32_t GetOutputTensor(std::shared_ptr<DNNTensor> &output_tensor,
+                                  int32_t roi_index,
+                                  int32_t output_index) = 0;
 
   /**
    * Get all outputs of specified roi (non-required)
@@ -385,8 +379,8 @@ class ModelRoiInferTask : virtual public ModelTask {
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t GetOutputTensors(
-      int32_t roi_index,
-      std::vector<std::shared_ptr<DNNTensor>> &output_tensors) = 0;
+      std::vector<std::shared_ptr<DNNTensor>> &output_tensors,
+      int32_t roi_index) = 0;
 
   /**
    * Get all output tensors, batch layout
@@ -460,13 +454,6 @@ class ModelRoiInferTask : virtual public ModelTask {
    */
   virtual int32_t GetOutputs(
       std::vector<std::shared_ptr<DNNResult>> &outputs) = 0;
-
-  /**
-   * Indicate all outputs have been retridved, the task is ready for set
-   * in/output, run inference etc again.
-   * @return 0 if success, return defined error code otherwise
-   */
-  virtual int32_t GetOutputsDone() = 0;
 };
 
 class MultiModelTask : public Task {

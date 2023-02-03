@@ -16,8 +16,8 @@ extern "C" {
 #endif  // __cplusplus
 
 #define HB_DNN_VERSION_MAJOR 1U
-#define HB_DNN_VERSION_MINOR 9U
-#define HB_DNN_VERSION_PATCH 9U
+#define HB_DNN_VERSION_MINOR 12U
+#define HB_DNN_VERSION_PATCH 3U
 
 #define HB_DNN_TENSOR_MAX_DIMENSIONS 8
 
@@ -274,11 +274,13 @@ int32_t hbDNNInfer(hbDNNTaskHandle_t *taskHandle, hbDNNTensor **output,
  * DNN inference with rois
  * @param[out] taskHandle: return a pointer represent the task if success,  otherwise nullptr
  * @param[in] dnnHandle: pointer to the dnn handle
- * @param[in] input: input tensor array, the size of array should be equal to  $(`hbDNNGetInputCount`) * roiCount
+ * @param[in] input: input tensor array, the size of array should be equal to  $(`hbDNNGetInputCount`) * `batch`
  *      range of [idx*$(`hbDNNGetInputCount`), (idx+1)*$(`hbDNNGetInputCount`)) represents input tensors
- *      for roi[idx].
- * @param[in] rois: Rois
- * @param[in] roiCount: roi count
+ *      for idxth batch. 
+ * @param[in] rois: Rois. the size of array should be equal to roiCount. 
+ *      Assuming that the model has the input of n resizer input sources, range of [idx*n, (idx+1)*n) represents 
+ *      rois for idxth batch.
+ * @param[in] roiCount: roi count. If the model has n resizer input sources, then roiCount=`batch` * n.
  * @param[in] output: pointer to the output tensor array
  * @param[in] inferCtrlParam: infer control parameters
  * @return 0 if success, return defined error code otherwise

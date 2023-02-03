@@ -52,12 +52,12 @@ class ModelManager {
   /**
    * Load model
    * @param[out] models
-   * @param[in] model_datas
+   * @param[in] models_data
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t Load(
       std::vector<Model*>& models,
-      const std::vector<std::pair<const void*, int>>& model_datas) = 0;
+      const std::vector<std::pair<const void*, int32_t>>& models_data) = 0;
 
   /**
    * Load model from single ddr
@@ -66,7 +66,7 @@ class ModelManager {
    * @return 0 if success, return defined error code otherwise
    */
   virtual int32_t Load(std::vector<Model*>& models,
-                       std::pair<const void*, int>& model_data) = 0;
+                       std::pair<const void*, int32_t>& model_data) = 0;
 
   /**
    * Get all loaded models

@@ -8,6 +8,9 @@
 
 #ifndef _EASY_DNN_VERSION_H_
 #define _EASY_DNN_VERSION_H_
+#define EASYDNN_VERSION_MAJOR 1U
+#define EASYDNN_VERSION_MINOR 1U
+#define EASYDNN_VERSION_PATCH 8U
 
 namespace hobot {
 namespace easy_dnn {

@@ -32,8 +32,8 @@ class Pool {
    * @return pool instance
    */
   template <typename... Args>
-  static std::shared_ptr<Pool<T>> Create(int pre_alloc_cnt,
-                                         int max_alloc_cnt,
+  static std::shared_ptr<Pool<T>> Create(int32_t pre_alloc_cnt,
+                                         int32_t max_alloc_cnt,
                                          Args &&... args) {
     auto *pool = new Pool<T>();
     pool->Init(pre_alloc_cnt, max_alloc_cnt, std::forward<Args>(args)...);
@@ -59,7 +59,7 @@ class Pool {
    * @param[in] timeout
    * @return item if pool not empty, null otherwise
    */
-  T *Get(int timeout) {
+  T *Get(int32_t timeout) {
     std::unique_lock<std::mutex> lck(mutex_);
     if (timeout > 0) {
       cv_.wait_for(lck, std::chrono::milliseconds(timeout), [this] {
@@ -87,7 +87,7 @@ class Pool {
    * @return item if success, null otherwise
    */
   template <typename... Args>
-  T *GetEx(int timeout, Args &&... args) {
+  T *GetEx(int32_t timeout, Args &&... args) {
     std::unique_lock<std::mutex> lck(mutex_);
     if (free_list_.empty() && items_.size() < max_alloc_cnt_) {
       AllocItem(std::forward<Args>(args)...);
@@ -121,7 +121,7 @@ class Pool {
    * @param[in] timeout
    * @return std::shared_ptr<T>
    */
-  std::shared_ptr<T> GetSharedPtr(int timeout) {
+  std::shared_ptr<T> GetSharedPtr(int32_t timeout) {
     return WrapItem(Get(timeout), true);
   }
 
@@ -132,7 +132,7 @@ class Pool {
    * @return std::shared_ptr<T>
    */
   template <typename... Args>
-  std::shared_ptr<T> GetSharedPtrEx(int timeout, Args &&... args) {
+  std::shared_ptr<T> GetSharedPtrEx(int32_t timeout, Args &&... args) {
     return WrapItem(GetEx(timeout, std::forward<Args>(args)...), true);
   }
 
@@ -141,7 +141,7 @@ class Pool {
    *    and surplus items will be destroyed immediately if available
    * @param[in] max_alloc_cnt
    */
-  void Resize(int max_alloc_cnt) {
+  void Resize(int32_t max_alloc_cnt) {
     std::lock_guard<std::mutex> lck(mutex_);
     max_alloc_cnt_ = max_alloc_cnt <= 0 ? INT32_MAX : max_alloc_cnt;
     while (items_.size() > max_alloc_cnt_ && !free_list_.empty()) {
@@ -190,9 +190,10 @@ class Pool {
    * @return 0
    */
   template <typename... Args>
-  int Init(int pre_alloc_cnt, int max_alloc_cnt, Args &&... args) {
+  int32_t Init(int32_t pre_alloc_cnt, int32_t max_alloc_cnt, Args &&... args) {
     max_alloc_cnt_ = max_alloc_cnt <= 0 ? INT32_MAX : max_alloc_cnt;
-    for (int i = 0; i < std::min(pre_alloc_cnt, (int32_t)max_alloc_cnt_); i++) {
+    for (int32_t i = 0; i < std::min(pre_alloc_cnt, (int32_t)max_alloc_cnt_);
+         i++) {
       AllocItem(std::forward<Args>(args)...);
     }
     return 0;
@@ -205,7 +206,7 @@ class Pool {
   }
 
   template <typename... Args>
-  int AllocItem(Args &&... args) {
+  int32_t AllocItem(Args &&... args) {
     T *item = new T(std::forward<Args>(args)...);
     items_.push_back(item);
     free_list_.push(item);
