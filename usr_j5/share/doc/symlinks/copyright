@@ -1,0 +1,31 @@
+This is the Debian GNU/Linux prepackaged version of Mark Lord's
+symlinks utility.
+
+This package was put together by Bernd Eckenfels <ecki@debian.org>.
+It is currently maintained by Sven Joachim <svenjoac@gmx.de>,
+the original sources for this version can be found at
+http://www.ibiblio.org/pub/Linux/utils/file/symlinks-1.4.tar.gz.
+
+Copyright (C) 2009 Mark Lord, freely distributable
+
+License clarification as found in Bug #273338:
+
+Hi,
+
+My "symlinks" utility pre-dates the "open source licensing" fad
+by a number of years.  Just to clarify, this is 100% freeware,
+written entirely by myself.  The intent is to use it to detect
+missing/obsolete symlink targets on an installed distro, before
+creating the "gold" (or "final") release discs.
+
+Use and distribute and modify as you (or anyone else) sees fit.
+There have no formal restrictions or requirements whatsoever
+regarding distribution of either binaries or source code,
+whether modified or original.
+
+Cheers
+--
+Mark Lord
+Real-Time Remedies Inc.
+mlord@pobox.com
+
