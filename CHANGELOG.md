@@ -1,5 +1,9 @@
 # Changelog for sysroot_docker
 
+tros_1.1.6b (2023-03-03)
+------------------
+1. 修复sysroot_docker 缺乏 x86 rapidjson库的问题。
+
 tros_1.1.6a (2023-02-16)
 ------------------
 1. 增加usr_x86目录存放x86平台dnn相关依赖系统库和头文件
