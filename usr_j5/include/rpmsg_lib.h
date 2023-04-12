@@ -4,8 +4,8 @@
  *			 All rights reserved.
  */
 
-#ifndef _RPMSG_LIB_H_
-#define _RPMSG_LIB_H_
+#ifndef RPMSG_LIB_H_
+#define RPMSG_LIB_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -40,7 +40,7 @@ struct rpmsg_handle;
 * @handle: out parameter, return communication handle
 * return: on success return 0; if fail return negative error code
 */
-int hb_rpmsg_connect_server(char *server_name, int flags, int timeout,
+int32_t hb_rpmsg_connect_server(const char *server_name, int32_t flags, int32_t timeout,
 struct rpmsg_handle **handle);
 
 /*
@@ -48,7 +48,7 @@ struct rpmsg_handle **handle);
 * @handle: communicatin handle want to disconnect
 * return: on success return 0; if fail return negative error code
 */
-int hb_rpmsg_disconnect_server(struct rpmsg_handle *handle);
+int32_t hb_rpmsg_disconnect_server(struct rpmsg_handle *handle);
 
 /*
 * hb_rpmsg_send - send frame on specific communication service
@@ -57,7 +57,7 @@ int hb_rpmsg_disconnect_server(struct rpmsg_handle *handle);
 * @len: data length want to send
 * return: on success return the number of bytes sent; if fail return negative error code
 */
-int hb_rpmsg_send(struct rpmsg_handle *handle, char *buf, int len);
+int32_t hb_rpmsg_send(const struct rpmsg_handle *handle, const char *buf, int32_t len);
 
 /*
 * hb_rpmsg_recv - receive frame on specific communication service
@@ -66,17 +66,18 @@ int hb_rpmsg_send(struct rpmsg_handle *handle, char *buf, int len);
 * @len: received data length
 * return: on success return the number of bytes received; if fail return negative error code
 */
-int hb_rpmsg_recv(struct rpmsg_handle *handle, char *buf, int len);
+int32_t hb_rpmsg_recv(const struct rpmsg_handle *handle, char *buf, int32_t len);
 
 /*
 * hb_rpmsg_error_message - return string type error message according to error_code
 * @error_code: error code return from rpmsg lib API
 * return: string type error message
 */
-char *hb_rpmsg_error_message(int error_code);
+const char *hb_rpmsg_error_message(int32_t error_code);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /*RPMSG_LIB_H_*/
+

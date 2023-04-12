@@ -14,353 +14,469 @@
 #ifndef HLOG_LOGGING_H_
 #define HLOG_LOGGING_H_
 
-#define GOOGLE_STATIC
-
-#include <fmt/format.h>
-
-#include <string>
-#include <typeinfo>
-#include <exception>
+#include <atomic>
 
 #include "hlog/hobot_log.h"
-#include "hlog/hobot_log_null_ostream.h"
-#include "hlog/hobot_log_ostream.h"
 
-#ifdef HLOG_DEBUG_OFF_
-#define HLOGINIT
-#define HLOG_T(...)
-#define HLOG_D(...)
-#define HLOG_I(...)
-#define HLOG_W(...)
-#define HLOG_E(...)
-#define HLOG_C(...)
-#define HTLOG_T(SUBTAG, FMT)
-#define HTLOG_D(SUBTAG, FMT)
-#define HTLOG_I(SUBTAG, FMT)
-#define HTLOG_W(SUBTAG, FMT)
-#define HTLOG_E(SUBTAG, FMT)
-#define HTLOG_C(SUBTAG, FMT)
+// no module interface
+// HPLOG printf format
+#define HPLOG_T(fmt, ...) \
+  HPLOGM(                 \
+      nullptr, hobot::hlog::log_trace, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define HSLOG_C \
-  hobot::hlog::HobotLogNullOStream(__FILE__, __LINE__, \
-                                   hobot::hlog::log_critical)
-#define HSLOG_E \
-  hobot::hlog::HobotLogNullOStream(__FILE__, __LINE__, hobot::hlog::log_err)
-#define HSLOG_W \
-  hobot::hlog::HobotLogNullOStream(__FILE__, __LINE__, hobot::hlog::log_warn)
-#define HSLOG_I \
-  hobot::hlog::HobotLogNullOStream(__FILE__, __LINE__, hobot::hlog::log_info)
-#define HSLOG_D \
-  hobot::hlog::HobotLogNullOStream(__FILE__, __LINE__, hobot::hlog::log_debug)
-#define HSLOG_T \
-  hobot::hlog::HobotLogNullOStream(__FILE__, __LINE__, hobot::hlog::log_trace)
-#else  // ifdef HLOG_DEBUG_OFF_
-#define HLOGINIT hobot::hlog::HobotLog::Instance().Init
+#define HPLOG_D(fmt, ...) \
+  HPLOGM(                 \
+      nullptr, hobot::hlog::log_debug, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define HLOG_T(...)                                                 \
-  try {                                                             \
-    (hobot::hlog::log_trace >= hobot::hlog::HobotLog::level_()) ?   \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_trace,                   \
-      fmt::format(__VA_ARGS__))  : (void) 0;                        \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HPLOG_I(fmt, ...) \
+  HPLOGM(nullptr, hobot::hlog::log_info, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HPLOG_W(fmt, ...) \
+  HPLOGM(nullptr, hobot::hlog::log_warn, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HPLOG_E(fmt, ...) \
+  HPLOGM(nullptr, hobot::hlog::log_err, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HPLOG_C(fmt, ...)           \
+  HPLOGM(nullptr,                   \
+         hobot::hlog::log_critical, \
+         __FILE__,                  \
+         __LINE__,                  \
+         fmt,                       \
+         ##__VA_ARGS__)
+
+// fmt
+#define HFLOG_T(fmt, ...) \
+  HFLOGM(                 \
+      nullptr, hobot::hlog::log_trace, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HFLOG_D(fmt, ...) \
+  HFLOGM(                 \
+      nullptr, hobot::hlog::log_debug, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HFLOG_I(fmt, ...) \
+  HFLOGM(nullptr, hobot::hlog::log_info, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HFLOG_W(fmt, ...) \
+  HFLOGM(nullptr, hobot::hlog::log_warn, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HFLOG_E(fmt, ...) \
+  HFLOGM(nullptr, hobot::hlog::log_err, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+#define HFLOG_C(fmt, ...)           \
+  HFLOGM(nullptr,                   \
+         hobot::hlog::log_critical, \
+         __FILE__,                  \
+         __LINE__,                  \
+         fmt,                       \
+         ##__VA_ARGS__)
+
+// stream
+#define HSLOG_T HSLOGM(nullptr, hobot::hlog::log_trace, __FILE__, __LINE__)
+
+#define HSLOG_D HSLOGM(nullptr, hobot::hlog::log_debug, __FILE__, __LINE__)
+
+#define HSLOG_I HSLOGM(nullptr, hobot::hlog::log_info, __FILE__, __LINE__)
+
+#define HSLOG_W HSLOGM(nullptr, hobot::hlog::log_warn, __FILE__, __LINE__)
+
+#define HSLOG_E HSLOGM(nullptr, hobot::hlog::log_err, __FILE__, __LINE__)
+
+#define HSLOG_C HSLOGM(nullptr, hobot::hlog::log_critical, __FILE__, __LINE__)
+
+// binary
+#define HBLOG_T(prefix, buf, len) \
+  HBLOGM(nullptr, hobot::hlog::log_trace, __FILE__, __LINE__, prefix, buf, len)
+
+#define HBLOG_D(prefix, buf, len) \
+  HBLOGM(nullptr, hobot::hlog::log_debug, __FILE__, __LINE__, prefix, buf, len)
+
+#define HBLOG_I(prefix, buf, len) \
+  HBLOGM(nullptr, hobot::hlog::log_info, __FILE__, __LINE__, prefix, buf, len)
+
+#define HBLOG_W(prefix, buf, len) \
+  HBLOGM(nullptr, hobot::hlog::log_warn, __FILE__, __LINE__, prefix, buf, len)
+
+#define HBLOG_E(prefix, buf, len) \
+  HBLOGM(nullptr, hobot::hlog::log_err, __FILE__, __LINE__, prefix, buf, len)
+
+#define HBLOG_C(prefix, buf, len)   \
+  HBLOGM(nullptr,                   \
+         hobot::hlog::log_critical, \
+         __FILE__,                  \
+         __LINE__,                  \
+         prefix,                    \
+         buf,                       \
+         len)
+
+// module interface: module_name must be a string literal and cannot be a
+// variable
+#define HPLOGM_T(module_name, fmt, ...) \
+  HPLOGM(module_name,                   \
+         hobot::hlog::log_trace,        \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HPLOGM_D(module_name, fmt, ...) \
+  HPLOGM(module_name,                   \
+         hobot::hlog::log_debug,        \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HPLOGM_I(module_name, fmt, ...) \
+  HPLOGM(module_name,                   \
+         hobot::hlog::log_info,         \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HPLOGM_W(module_name, fmt, ...) \
+  HPLOGM(module_name,                   \
+         hobot::hlog::log_warn,         \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HPLOGM_E(module_name, fmt, ...) \
+  HPLOGM(module_name,                   \
+         hobot::hlog::log_err,          \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HPLOGM_C(module_name, fmt, ...) \
+  HPLOGM(module_name,                   \
+         hobot::hlog::log_critical,     \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+// format
+#define HFLOGM_T(module_name, fmt, ...) \
+  HFLOGM(module_name,                   \
+         hobot::hlog::log_trace,        \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HFLOGM_D(module_name, fmt, ...) \
+  HFLOGM(module_name,                   \
+         hobot::hlog::log_debug,        \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HFLOGM_I(module_name, fmt, ...) \
+  HFLOGM(module_name,                   \
+         hobot::hlog::log_info,         \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HFLOGM_W(module_name, fmt, ...) \
+  HFLOGM(module_name,                   \
+         hobot::hlog::log_warn,         \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HFLOGM_E(module_name, fmt, ...) \
+  HFLOGM(module_name,                   \
+         hobot::hlog::log_err,          \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+#define HFLOGM_C(module_name, fmt, ...) \
+  HFLOGM(module_name,                   \
+         hobot::hlog::log_critical,     \
+         __FILE__,                      \
+         __LINE__,                      \
+         fmt,                           \
+         ##__VA_ARGS__)
+
+// stream
+#define HSLOGM_T(module_name) \
+  HSLOGM(module_name, hobot::hlog::log_trace, __FILE__, __LINE__)
+
+#define HSLOGM_D(module_name) \
+  HSLOGM(module_name, hobot::hlog::log_debug, __FILE__, __LINE__)
+
+#define HSLOGM_I(module_name) \
+  HSLOGM(module_name, hobot::hlog::log_info, __FILE__, __LINE__)
+
+#define HSLOGM_W(module_name) \
+  HSLOGM(module_name, hobot::hlog::log_warn, __FILE__, __LINE__)
+
+#define HSLOGM_E(module_name) \
+  HSLOGM(module_name, hobot::hlog::log_err, __FILE__, __LINE__)
+
+#define HSLOGM_C(module_name) \
+  HSLOGM(module_name, hobot::hlog::log_critical, __FILE__, __LINE__)
+
+// binary
+#define HBLOGM_T(module_name, prefix_str, buf, len) \
+  HBLOGM(module_name,                               \
+         hobot::hlog::log_trace,                    \
+         __FILE__,                                  \
+         __LINE__,                                  \
+         prefix_str,                                \
+         buf,                                       \
+         len)
+
+#define HBLOGM_D(module_name, prefix_str, buf, len) \
+  HBLOGM(module_name,                               \
+         hobot::hlog::log_debug,                    \
+         __FILE__,                                  \
+         __LINE__,                                  \
+         prefix_str,                                \
+         buf,                                       \
+         len)
+
+#define HBLOGM_I(module_name, prefix_str, buf, len) \
+  HBLOGM(module_name,                               \
+         hobot::hlog::log_info,                     \
+         __FILE__,                                  \
+         __LINE__,                                  \
+         prefix_str,                                \
+         buf,                                       \
+         len)
+
+#define HBLOGM_W(module_name, prefix_str, buf, len) \
+  HBLOGM(module_name,                               \
+         hobot::hlog::log_warn,                     \
+         __FILE__,                                  \
+         __LINE__,                                  \
+         prefix_str,                                \
+         buf,                                       \
+         len)
+
+#define HBLOGM_E(module_name, prefix_str, buf, len) \
+  HBLOGM(module_name,                               \
+         hobot::hlog::log_err,                      \
+         __FILE__,                                  \
+         __LINE__,                                  \
+         prefix_str,                                \
+         buf,                                       \
+         len)
+
+#define HBLOGM_C(module_name, prefix_str, buf, len) \
+  HBLOGM(module_name,                               \
+         hobot::hlog::log_critical,                 \
+         __FILE__,                                  \
+         __LINE__,                                  \
+         prefix_str,                                \
+         buf,                                       \
+         len)
+
+// module id wrapper
+#define HPLOGM(module_name, level, file, line, fmt, ...) \
+  HPLOGM_IMPL(module_name,                               \
+              HLOG_MODULE_ID(module_name),               \
+              level,                                     \
+              file,                                      \
+              line,                                      \
+              fmt,                                       \
+              ##__VA_ARGS__)
+
+#define HFLOGM(module_name, level, file, line, fmt, ...) \
+  HFLOGM_IMPL(module_name,                               \
+              HLOG_MODULE_ID(module_name),               \
+              level,                                     \
+              file,                                      \
+              line,                                      \
+              fmt,                                       \
+              ##__VA_ARGS__)
+
+#define HSLOGM(module_name, level, file, line) \
+  HSLOGM_IMPL(module_name, HLOG_MODULE_ID(module_name), level, file, line)
+
+#define HBLOGM(module_name, level, file, line, prefix, buffer, len) \
+  HBLOGM_IMPL(module_name,                                          \
+              HLOG_MODULE_ID(module_name),                          \
+              level,                                                \
+              file,                                                 \
+              line,                                                 \
+              prefix,                                               \
+              buffer,                                               \
+              len)
+
+//
+// conditional, only needs for stream
+//
+#define HSLOG_COND(level, cond) HSLOGM_COND(nullptr, level, cond)
+
+#define HSLOGM_COND(module_name, level, cond)   \
+  HSLOGM_COND_IMPL(module_name,                 \
+                   HLOG_MODULE_ID(module_name), \
+                   level,                       \
+                   cond,                        \
+                   __FILE__,                    \
+                   __LINE__)
+
+// hlog 1.0 compatible interface
+//
+
+#define HLOG_T(fmt, ...) HFLOG_T(fmt, ##__VA_ARGS__)
+
+#define HLOG_D(fmt, ...) HFLOG_D(fmt, ##__VA_ARGS__)
+
+#define HLOG_I(fmt, ...) HFLOG_I(fmt, ##__VA_ARGS__)
+
+#define HLOG_W(fmt, ...) HFLOG_W(fmt, ##__VA_ARGS__)
+
+#define HLOG_E(fmt, ...) HFLOG_E(fmt, ##__VA_ARGS__)
+
+#define HLOG_C(fmt, ...) HFLOG_C(fmt, ##__VA_ARGS__)
+
+#define HTLOG_T(module_name, FMT, ...) HFLOGM_T(module_name, FMT, ##__VA_ARGS__)
+
+#define HTLOG_D(module_name, FMT, ...) HFLOGM_D(module_name, FMT, ##__VA_ARGS__)
+
+#define HTLOG_I(module_name, FMT, ...) HFLOGM_I(module_name, FMT, ##__VA_ARGS__)
+
+#define HTLOG_W(module_name, FMT, ...) HFLOGM_W(module_name, FMT, ##__VA_ARGS__)
+
+#define HTLOG_E(module_name, FMT, ...) HFLOGM_E(module_name, FMT, ##__VA_ARGS__)
+
+#define HTLOG_C(module_name, FMT, ...) HFLOGM_C(module_name, FMT, ##__VA_ARGS__)
+
+#define HSLOG_IF(level, cond) HSLOG_COND(level, cond)
+
+#define HLOG_CHECK_PRINT(arg1, arg2, comm)   \
+  hobot::hlog::HobotLog::Instance()->LogFmt( \
+      nullptr,                               \
+      HLOG_MODULE_ID(nullptr),               \
+      hobot::hlog::log_err,                  \
+      __FILE__,                              \
+      __LINE__,                              \
+      HLOG_FILE_POS_ID(__FILE__, __LINE__),  \
+      "[{} {} {}]  failed!",                 \
+      #arg1,                                 \
+      #comm,                                 \
+      #arg2);
+
+#define HLOG_EQ(arg1, arg2)             \
+  if ((arg1) != (arg2)) {               \
+    HLOG_CHECK_PRINT(arg1, arg2, EQUAL) \
   }
 
-#define HLOG_D(...)                                                 \
-  try {                                                             \
-    (hobot::hlog::log_debug >= hobot::hlog::HobotLog::level_()) ?   \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_debug,                   \
-      fmt::format(__VA_ARGS__)) : (void) 0;                         \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HLOG_NE(arg1, arg2)                 \
+  if ((arg1) == (arg2)) {                   \
+    HLOG_CHECK_PRINT(arg1, arg2, NOT EQUAL) \
   }
 
-#define HLOG_I(...)                                                 \
-  try {                                                             \
-    (hobot::hlog::log_info >= hobot::hlog::HobotLog::level_()) ?    \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_info,                    \
-      fmt::format(__VA_ARGS__))  : (void) 0;                        \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HLOG_LE(arg1, arg2)                  \
+  if ((arg1) > (arg2)) {                     \
+    HLOG_CHECK_PRINT(arg1, arg2, LESS EQUAL) \
   }
 
-#define HLOG_W(...)                                                 \
-  try {                                                             \
-    (hobot::hlog::log_warn >= hobot::hlog::HobotLog::level_()) ?    \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_warn,                    \
-      fmt::format(__VA_ARGS__)) : (void) 0;                         \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HLOG_LT(arg1, arg2)                 \
+  if ((arg1) >= (arg2)) {                   \
+    HLOG_CHECK_PRINT(arg1, arg2, LESS THAN) \
   }
 
-#define HLOG_E(...)                                                 \
-  try {                                                             \
-    (hobot::hlog::log_err >= hobot::hlog::HobotLog::level_()) ?     \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_err,                     \
-      fmt::format(__VA_ARGS__)) : (void) 0;                         \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HLOG_GE(arg1, arg2)                     \
+  if ((arg1) < (arg2)) {                        \
+    HLOG_CHECK_PRINT(arg1, arg2, GREATER EQUAL) \
   }
 
-#define HLOG_C(...)                                                 \
-  try {                                                             \
-    (hobot::hlog::log_critical >= hobot::hlog::HobotLog::level_()) ? \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_critical,                \
-      fmt::format(__VA_ARGS__)) : (void) 0;                         \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HLOG_GT(arg1, arg2)                    \
+  if ((arg1) <= (arg2)) {                      \
+    HLOG_CHECK_PRINT(arg1, arg2, GREATER THAN) \
   }
 
-#define HTLOG_T(SUBTAG, FMT, ...)                                   \
-  try {                                                             \
-    (hobot::hlog::log_trace >= hobot::hlog::HobotLog::level_()) ?   \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_trace,                   \
-      fmt::format("[{}]{}", SUBTAG,                                 \
-      fmt::format(FMT, ##__VA_ARGS__))) : (void) 0;                 \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: " << SUBTAG << " " << FMT;    \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
+#define HLOG_IF(level, condition, arg)               \
+  if (condition) {                                   \
+    if (level == hobot::hlog::log_trace) {           \
+      HFLOG_T(arg);                                  \
+    } else if (level == hobot::hlog::log_debug) {    \
+      HFLOG_D(arg);                                  \
+    } else if (level == hobot::hlog::log_info) {     \
+      HFLOG_I(arg);                                  \
+    } else if (level == hobot::hlog::log_warn) {     \
+      HFLOG_W(arg);                                  \
+    } else if (level == hobot::hlog::log_err) {      \
+      HFLOG_E(arg);                                  \
+    } else if (level == hobot::hlog::log_critical) { \
+      HFLOG_C(arg);                                  \
+    }                                                \
   }
-
-#define HTLOG_D(SUBTAG, FMT, ...)                                   \
-  try {                                                             \
-    (hobot::hlog::log_debug >= hobot::hlog::HobotLog::level_()) ?   \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_debug,                   \
-      fmt::format("[{}]{}", SUBTAG,                                 \
-      fmt::format(FMT, ##__VA_ARGS__))) : (void) 0;                 \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: " << SUBTAG << " " << FMT;    \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
-  }
-
-#define HTLOG_I(SUBTAG, FMT, ...)                                   \
-  try {                                                             \
-    (hobot::hlog::log_info >= hobot::hlog::HobotLog::level_()) ?    \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_info,                    \
-      fmt::format("[{}]{}", SUBTAG,                                 \
-      fmt::format(FMT, ##__VA_ARGS__))) : (void) 0;                 \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: " << SUBTAG << " " << FMT;    \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
-  }
-
-#define HTLOG_W(SUBTAG, FMT, ...)                                   \
-  try {                                                             \
-    (hobot::hlog::log_warn >= hobot::hlog::HobotLog::level_()) ?    \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_warn,                    \
-      fmt::format("[{}]{}", SUBTAG,                                 \
-      fmt::format(FMT, ##__VA_ARGS__))) : (void) 0;                 \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: " << SUBTAG << " " << FMT;    \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
-  }
-
-#define HTLOG_E(SUBTAG, FMT, ...)                                   \
-  try {                                                             \
-    (hobot::hlog::log_err >= hobot::hlog::HobotLog::level_()) ?     \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_err,                     \
-      fmt::format("[{}]{}", SUBTAG,                                 \
-      fmt::format(FMT, ##__VA_ARGS__))) : (void) 0;                 \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: " << SUBTAG << " " << FMT;    \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
-  }
-
-#define HTLOG_C(SUBTAG, FMT, ...)                                   \
-  try {                                                             \
-    (hobot::hlog::log_critical >= hobot::hlog::HobotLog::level_()) ? \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_critical,                \
-      fmt::format("[{}]{}", SUBTAG,                                 \
-      fmt::format(FMT, ##__VA_ARGS__))) : (void) 0;                 \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: " << SUBTAG << " " << FMT;    \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(__VA_ARGS__);               \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
-  }
-
-#define HSLOG_C                                                     \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__,                  \
-  hobot::hlog::log_critical).stream()
-#define HSLOG_E                                                     \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__,                  \
-  hobot::hlog::log_err).stream()
-#define HSLOG_W                                                     \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__,                  \
-  hobot::hlog::log_warn).stream()
-#define HSLOG_I                                                     \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__,                  \
-  hobot::hlog::log_info).stream()
-#define HSLOG_D                                                     \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__,                  \
-  hobot::hlog::log_debug).stream()
-#define HSLOG_T                                                     \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__,                  \
-  hobot::hlog::log_trace).stream()
-
-#define HLOG_CHECK_PRINT(arg1, arg2, comm)                          \
-  try {                                                             \
-    (hobot::hlog::log_critical >= hobot::hlog::HobotLog::level_()) ? \
-    hobot::hlog::HobotLog::Instance().PrintLog(                     \
-      __FILE__, __LINE__, hobot::hlog::log_err,                     \
-      fmt::format("[{} {} {}]  failed!", #arg1, #comm, #arg2))      \
-     : (void) 0;                                                    \
-  } catch(std::exception& e) {                                      \
-    std::cout << "[EXCEPTION] origin: ";                            \
-    hobot::hlog::HLOG_EXCCEPTION_OUTPUT(#arg1, #comm, #arg2);       \
-    std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-    std::cout << "[EXCEPTION] position: "                           \
-              << __FILE__ << " " << __LINE__ << std::endl;          \
-  }
-
-#define HLOG_IF_PRINT(arg, level)                                   \
-  (level >= hobot::hlog::HobotLog::level_()) ?                      \
-  hobot::hlog::HobotLog::Instance().PrintLog(                       \
-    __FILE__, __LINE__, level, arg) : (void) 0;                     \
-
-#define HLOG_EQ(arg1, arg2)                                         \
-  if ((arg1) != (arg2)) {                                           \
-    HLOG_CHECK_PRINT(arg1, arg2, EQUAL)                             \
-  }
-
-#define HLOG_NE(arg1, arg2)                                         \
-  if ((arg1) == (arg2)) {                                           \
-    HLOG_CHECK_PRINT(arg1, arg2, NOT EQUAL)                         \
-  }
-
-#define HLOG_LE(arg1, arg2)                                         \
-  if ((arg1) > (arg2)) {                                            \
-    HLOG_CHECK_PRINT(arg1, arg2, LESS EQUAL)                        \
-  }
-
-#define HLOG_LT(arg1, arg2)                                         \
-  if ((arg1) >= (arg2)) {                                           \
-    HLOG_CHECK_PRINT(arg1, arg2, LESS THAN)                         \
-  }
-
-#define HLOG_GE(arg1, arg2)                                         \
-  if ((arg1) < (arg2)) {                                            \
-    HLOG_CHECK_PRINT(arg1, arg2, GREATER EQUAL)                     \
-  }
-
-#define HLOG_GT(arg1, arg2)                                         \
-  if ((arg1) <= (arg2)) {                                           \
-    HLOG_CHECK_PRINT(arg1, arg2, GREATER THAN)                      \
-  }
-
-#define HLOG_IF(level, condition, arg)                              \
-  if (condition) {                                                  \
-    HLOG_IF_PRINT(arg, level)                                       \
-  }
-
-#define HSLOG_IF(level, condition)                                  \
-  static_cast<void>(0),                                             \
-  ((level < hobot::hlog::HobotLog::level_()) || !(condition))       \
-  ? (void) 0 :                                                      \
-  hobot::hlog::LogMessageVoidify() &                                \
-  hobot::hlog::HobotLogOstream(__FILE__, __LINE__, level).stream()
-
 
 #define HLOG_OCCURRENCES occurrence_##__FUNCTION__##__LINE__
 #define HLOG_OCCURRENCES_MOD_N occurrence_mode_n##__FUNCTION__##__LINE__
 
-#define HLOG_FIRST_N(n, level, arg)                                 \
-  {                                                                 \
-    static unsigned HLOG_OCCURRENCES = 0;                            \
-    hobot::hlog::AddOne(&HLOG_OCCURRENCES);                         \
-    if (HLOG_OCCURRENCES <= n) {                                     \
-      try {                                                         \
-      (level >= hobot::hlog::HobotLog::level_()) ?                  \
-      hobot::hlog::HobotLog::Instance().PrintLog(                   \
-        __FILE__, __LINE__, level,                                  \
-        fmt::format("[{}]{}", HLOG_OCCURRENCES, arg)) : (void) 0;    \
-      } catch(std::exception& e) {                                      \
-        std::cout << "[EXCEPTION] origin: ";                            \
-        hobot::hlog::HLOG_EXCCEPTION_OUTPUT(HLOG_OCCURRENCES, arg);     \
-        std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-        std::cout << "[EXCEPTION] position: "                           \
-                  << __FILE__ << " " << __LINE__ << std::endl;          \
-      }                                                             \
-    }                                                               \
+#define HLOG_FIRST_N(n, level, arg)                    \
+  {                                                    \
+    static std::atomic<unsigned> HLOG_OCCURRENCES(0);  \
+    HLOG_OCCURRENCES++;                                \
+    if (HLOG_OCCURRENCES <= n) {                       \
+      if (level == hobot::hlog::log_trace) {           \
+        HFLOG_T(arg);                                  \
+      } else if (level == hobot::hlog::log_debug) {    \
+        HFLOG_D(arg);                                  \
+      } else if (level == hobot::hlog::log_info) {     \
+        HFLOG_I(arg);                                  \
+      } else if (level == hobot::hlog::log_warn) {     \
+        HFLOG_W(arg);                                  \
+      } else if (level == hobot::hlog::log_err) {      \
+        HFLOG_E(arg);                                  \
+      } else if (level == hobot::hlog::log_critical) { \
+        HFLOG_C(arg);                                  \
+      }                                                \
+    }                                                  \
   }
 
-#define HLOG_ONCE(level, arg)                                       \
-  HLOG_FIRST_N(1, level, arg)
+#define HLOG_ONCE(level, arg) HLOG_FIRST_N(1, level, arg)
 
-#define HLOG_EVERY_N(n, level, arg)                                 \
-  {                                                                 \
-    static unsigned HLOG_OCCURRENCES = 0, HLOG_OCCURRENCES_MOD_N = 0; \
-    hobot::hlog::AddOne(&HLOG_OCCURRENCES);                         \
-    hobot::hlog::AddOne(&HLOG_OCCURRENCES_MOD_N);                   \
-    if (HLOG_OCCURRENCES_MOD_N > n) {                                \
-      hobot::hlog::SubN(&HLOG_OCCURRENCES_MOD_N, n);                \
-    }                                                               \
-    if (HLOG_OCCURRENCES_MOD_N == 1) {                               \
-      try {                                                         \
-        (level >= hobot::hlog::HobotLog::level_()) ?                \
-        hobot::hlog::HobotLog::Instance().PrintLog(                 \
-          __FILE__, __LINE__, level,                                \
-          fmt::format("[{}]{}", HLOG_OCCURRENCES, arg)) : (void) 0;  \
-      } catch(std::exception& e) {                                      \
-        std::cout << "[EXCEPTION] origin: ";                            \
-        hobot::hlog::HLOG_EXCCEPTION_OUTPUT(HLOG_OCCURRENCES, arg);     \
-        std::cout << "[EXCEPTION] reason: " << e.what() << std::endl;   \
-        std::cout << "[EXCEPTION] position: "                           \
-                  << __FILE__ << " " << __LINE__ << std::endl;          \
-      }                                                             \
-    }                                                               \
+#define HLOG_EVERY_N(n, level, arg)                         \
+  {                                                         \
+    static std::atomic<unsigned> HLOG_OCCURRENCES(0);       \
+    static std::atomic<unsigned> HLOG_OCCURRENCES_MOD_N(0); \
+    HLOG_OCCURRENCES++;                                     \
+    HLOG_OCCURRENCES_MOD_N++;                               \
+    if (HLOG_OCCURRENCES_MOD_N > n) {                       \
+      HLOG_OCCURRENCES_MOD_N -= n;                          \
+    }                                                       \
+    if (HLOG_OCCURRENCES_MOD_N == 1) {                      \
+      if (level == hobot::hlog::log_trace) {                \
+        HFLOG_T(arg);                                       \
+      } else if (level == hobot::hlog::log_debug) {         \
+        HFLOG_D(arg);                                       \
+      } else if (level == hobot::hlog::log_info) {          \
+        HFLOG_I(arg);                                       \
+      } else if (level == hobot::hlog::log_warn) {          \
+        HFLOG_W(arg);                                       \
+      } else if (level == hobot::hlog::log_err) {           \
+        HFLOG_E(arg);                                       \
+      } else if (level == hobot::hlog::log_critical) {      \
+        HFLOG_C(arg);                                       \
+      }                                                     \
+    }                                                       \
   }
-#endif  // ifdef HLOG_DEBUG_OFF_
+
+// set log level
+#define HLOG_SET_LOGLEVEL(level) HLOGM_SET_LOGLEVEL(nullptr, level)
+
+#define HLOG_GET_LOGLEVEL() HLOGM_GET_LOGLEVEL(nullptr)
+
+/// to support HLOG_C(var)
+#ifdef FMT_STRING
+#undef FMT_STRING
+#define FMT_STRING(var) (fmt::format("{}", var))
+#endif
+
 #endif  // HLOG_LOGGING_H_

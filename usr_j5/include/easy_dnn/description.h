@@ -15,8 +15,12 @@
 #include <utility>
 #include <vector>
 
+#include "any_utils.h"
+
 namespace hobot {
 namespace easy_dnn {
+
+using ParamMap = AnyMap;
 
 class Model;
 class InputProcessor;
@@ -27,8 +31,9 @@ class OutputParser;
  */
 class Description {
  public:
-  Description(Model *model, int index, std::string type)
+  Description(Model *model, int32_t index, std::string type)
       : model_(model), index_(index), type_(std::move(type)) {}
+
   /**
    * Get model, kept for flexibility
    * @return model
@@ -65,6 +70,36 @@ class Description {
    */
   inline void SetType(const std::string &type) { type_ = type; }
 
+  /**
+   * Get param by key
+   * @param[in] key
+   * @param[out] value
+   */
+  template <typename ParamType>
+  int32_t GetParam(ParamType &value, std::string const &key) {
+    return params_.GetValue(value, key);
+  }
+
+  /**
+   * Set param by key
+   * @param[in] key
+   * @param[in] value
+   */
+  template <typename ParamType>
+  int32_t SetParam(std::string const &key, ParamType const &value) {
+    return params_.SetValue(key, value);
+  }
+
+  /**
+   * Update param by key
+   * @param[in] key
+   * @param[in] value
+   */
+  template <typename ParamType>
+  int32_t UpdateParam(std::string const &key, ParamType const &value) {
+    return params_.UpdateValue(key, value);
+  }
+
   virtual ~Description() = default;
 
  protected:
@@ -72,6 +107,7 @@ class Description {
   Model *model_;
   int32_t index_;
   std::string type_;
+  ParamMap params_;
 };
 
 /**
@@ -79,7 +115,7 @@ class Description {
  */
 class InputDescription : public Description {
  public:
-  InputDescription(Model *model, int index, std::string type = "")
+  InputDescription(Model *model, int32_t index, std::string type = "")
       : Description(model, index, std::move(type)) {}
   ~InputDescription() override = default;
 };
@@ -89,18 +125,18 @@ class InputDescription : public Description {
  */
 class OutputDescription : public Description {
  public:
-  OutputDescription(Model *model, int index, std::string type = "")
+  OutputDescription(Model *model, int32_t index, std::string type = "")
       : Description(model, index, std::move(type)) {}
   /**
    * Get dependencies output branch
    * @return dependencies
    */
-  std::vector<int> &GetDependencies() { return dependencies_; }
+  std::vector<int32_t> &GetDependencies() { return dependencies_; }
 
   ~OutputDescription() override = default;
 
  protected:
-  std::vector<int> dependencies_;
+  std::vector<int32_t> dependencies_;
 };
 
 }  // namespace easy_dnn

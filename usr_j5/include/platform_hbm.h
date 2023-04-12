@@ -11,8 +11,8 @@
  * (at your option) any later version.
  */
 
-#ifndef LIBLOAD_HBM_INC_PLATFORM_HBM_H_
-#define LIBLOAD_HBM_INC_PLATFORM_HBM_H_
+#ifndef LIBLOAD_HBM_INCLUDE_PLATFORM_HBM_H_
+#define LIBLOAD_HBM_INCLUDE_PLATFORM_HBM_H_
 #include <stdint.h>
 
 /* ============== define definition ============== */
@@ -59,4 +59,5 @@ int32_t platform_get_hbm_number();
  * @return: NULL--failure, or hbm name, the same as parameter hbm_name
  */
 char *platform_get_hbm_name(unsigned int index, char *hbm_name);
-#endif  // LIBLOAD_HBM_INC_PLATFORM_HBM_H_
+
+#endif  // LIBLOAD_HBM_INCLUDE_PLATFORM_HBM_H_

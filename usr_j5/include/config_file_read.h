@@ -88,109 +88,87 @@ extern "C" {
 #define STS_LEN_OCCUP_BYTE_NUM 1
 #define NUM_OF_ENV_ID_OCCUP_BYTE_NUM 1
 
-typedef struct Gen_Dtc_id_Type_ {
-	uint16_t dtc_id;
-} Gen_Dtc_id_Type;
-typedef std::map<uint16_t, Gen_Dtc_id_Type> GEN_DTC_ID_MAP;
-CONFIG_FILE_READ_EXT GEN_DTC_ID_MAP diag_gen_dtc_id_map;
-
 typedef struct DTC_Status_Type_ {
-	uint16_t dtc_id_base;
-	uint8_t dtc_sts_len;
-	uint8_t *his_dtc_status;
-	uint8_t *cur_dtc_status;
+  uint16_t dtc_id_base;
+  uint8_t dtc_sts_len;
+  uint8_t *his_dtc_status;
+  uint8_t *cur_dtc_status;
 } DTC_Status_Type;
 typedef std::map<uint16_t, DTC_Status_Type> DTC_STATUS_MAP;
 CONFIG_FILE_READ_EXT DTC_STATUS_MAP diag_dtc_sts_map;
 
 typedef struct stdtc_list_struct_ {
-	uint16_t module_id;
-	uint16_t event_id;
-	uint16_t dtc_id;
-	uint16_t dtc_report_byte_index;
-	uint16_t dtc_report_bit_index;
-	char const *dtc_description;
-	char const *filename;
-	uint32_t snapshotlen;
-	uint32_t toclientlen;
-	uint16_t stable_time;
-	uint32_t error_counters;
+  uint16_t module_id;
+  uint16_t event_id_max;
+  uint16_t dtc_id;
+  uint16_t dtc_report_byte_index;
+  uint16_t dtc_report_bit_index;
+  char const *dtc_description;
+  char const *filename;
+  uint16_t stable_time;
+  uint32_t error_counters;
 } stdtc_list_struct;
 typedef std::map<uint16_t, stdtc_list_struct> DTC_LIST_MAP;
 CONFIG_FILE_READ_EXT DTC_LIST_MAP diag_dtc_list_map;
 
 typedef struct diag_dtc_info_ {
-	uint16_t dtc_id;
-	uint8_t dtc_trigged;
-	uint8_t dtc_env_wr_en;
-	uint16_t tmcnt;
-	uint16_t stable_time;
-	uint8_t env_data_gen_timing;
-	uint32_t ErrLen;
-	uint8_t *pErr;  // when error, env data
-	uint32_t BeforSucessLen;
-	uint8_t *pBeforSucess;  // when chg to success, env data
-	uint32_t SucessLen;
-	uint8_t *pSucess;  // save general env data
+  uint16_t dtc_id;
+  uint8_t dtc_trigged;
+  uint8_t dtc_env_wr_en;
+  uint16_t tmcnt;
+  uint16_t stable_time;
+  uint8_t env_data_gen_timing;
 } diag_dtc_info;
 typedef std::map<uint16_t, diag_dtc_info> DTC_INFO_MAP;
 CONFIG_FILE_READ_EXT DTC_INFO_MAP diag_dtc_info_map;
 
 typedef struct dtc_base_info_ {
-	uint16_t kernel_dtc_id_base;
-	uint16_t kernel_module_id_max;
-	uint16_t kernel_module_id_min;
-	uint16_t kernel_module_bitmask_num;
+  uint16_t kernel_dtc_id_base;
+  uint16_t kernel_module_id_max;
+  uint16_t kernel_module_id_min;
 
-	uint16_t model_dtc_id_base;
-	uint16_t model_module_id_max;
-	uint16_t model_module_id_min;
-	uint16_t model_module_bitmask_num;
+  uint16_t model_dtc_id_base;
+  uint16_t model_module_id_max;
+  uint16_t model_module_id_min;
 
-	uint16_t perception_dtc_id_base;
-	uint16_t perception_module_id_max;
-	uint16_t perception_module_id_min;
-	uint16_t perception_module_bitmask_num;
+  uint16_t perception_dtc_id_base;
+  uint16_t perception_module_id_max;
+  uint16_t perception_module_id_min;
 
-	uint16_t adas_dtc_id_base;
-	uint16_t adas_module_id_max;
-	uint16_t adas_module_id_min;
-	uint16_t adas_module_bitmask_num;
+  uint16_t adas_dtc_id_base;
+  uint16_t adas_module_id_max;
+  uint16_t adas_module_id_min;
 
-	uint16_t ap_dtc_id_base;
-	uint16_t ap_module_id_max;
-	uint16_t ap_module_id_min;
-	uint16_t ap_module_bitmask_num;
+  uint16_t ap_dtc_id_base;
+  uint16_t ap_module_id_max;
+  uint16_t ap_module_id_min;
 
-	uint16_t general_dtc_id_base;
-	uint16_t general_module_id_max;
-	uint16_t general_module_id_min;
-	uint16_t general_module_bitmask_num;
+  uint16_t general_dtc_id_base;
+  uint16_t general_module_id_max;
+  uint16_t general_module_id_min;
 
-	uint16_t selftest_dtc_id_base;
-	uint16_t selftest_module_id_max;
-	uint16_t selftest_module_id_min;
-	uint16_t selftest_module_bitmask_num;
+  uint16_t selftest_dtc_id_base;
+  uint16_t selftest_module_id_max;
+  uint16_t selftest_module_id_min;
 
-	uint16_t dtc_sts_len_byte_num_total;
-	uint16_t dtc_sts_byte_num_total;
+  uint16_t dtc_sts_len_byte_num_total;
+  uint16_t dtc_sts_byte_num_total;
 
-	uint16_t dtc_env_len_byte_num_total;
-	uint16_t dtc_env_data_byte_num_total;
-	uint16_t dtc_env_id_byte_num_total;
+  uint16_t dtc_env_len_byte_num_total;
+  uint16_t dtc_env_id_byte_num_total;
 } dtc_base_info;
 CONFIG_FILE_READ_EXT dtc_base_info diag_dtc_base_info;
 
 typedef struct diagnose_info_base_ {
-	char const *name;
-	char const *version;
+  char const *name;
+  char const *version;
 } diagnose_info_base;
 CONFIG_FILE_READ_EXT diagnose_info_base base_diagnose_info;
 CONFIG_FILE_READ_EXT uint8_t DTC_LIST_NUM_MAX;
 
 CONFIG_FILE_READ_EXT int read_json_file(void);
 CONFIG_FILE_READ_EXT void update_infomap(uint16_t dtc_id, uint8_t dtc_status,
-						uint8_t general, DTC_LIST_MAP::iterator idFoundlist);
+                        uint8_t general, DTC_LIST_MAP::iterator idFoundlist);
 CONFIG_FILE_READ_EXT uint8_t update_stsmap(uint16_t dtc_id, uint8_t dtc_status,
-						DTC_LIST_MAP::iterator idFound);
+                                        DTC_LIST_MAP::iterator idFound);
 #endif

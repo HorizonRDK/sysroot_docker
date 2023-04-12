@@ -2,7 +2,7 @@
 #define OPENCV_CVCONFIG_H_INCLUDED
 
 /* OpenCV compiled as static or dynamic libs */
-/* #undef BUILD_SHARED_LIBS */
+#define BUILD_SHARED_LIBS
 
 /* OpenCV intrinsics optimized code */
 #define CV_ENABLE_INTRINSICS
@@ -132,9 +132,12 @@
 /* #undef HAVE_NVCUVENC */
 
 /* OpenCL Support */
-/* #undef HAVE_OPENCL */
+#define HAVE_OPENCL
 /* #undef HAVE_OPENCL_STATIC */
 /* #undef HAVE_OPENCL_SVM */
+
+/* NVIDIA OpenCL D3D Extensions support */
+/* #undef HAVE_OPENCL_D3D11_NV */
 
 /* OpenEXR codec */
 /* #undef HAVE_OPENEXR */

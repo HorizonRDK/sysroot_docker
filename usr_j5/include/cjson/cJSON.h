@@ -28,6 +28,15 @@ extern "C"
 {
 #endif
 
+#define GET_JSON_VALUE(n, f) \
+    ((node = cJSON_GetObjectItem(n, #f)) == NULL) ? 0 : node->valueint
+
+#define GET_JSON_STRING(n, f) \
+    ((node = cJSON_GetObjectItem(n, #f)) == NULL) ? 0 : node->valuestring
+
+#define STRCPY_JSON_STRING(n, f, out) \
+    ((node = cJSON_GetObjectItem(n, #f)) == NULL) ? 0 : strcpy(out, node->valuestring)
+
 /* project version */
 #define CJSON_VERSION_MAJOR 1
 #define CJSON_VERSION_MINOR 6

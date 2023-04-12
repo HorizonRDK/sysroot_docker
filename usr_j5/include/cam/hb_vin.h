@@ -12,23 +12,28 @@ extern "C" {
 
 #include <stdint.h>
 
-extern int hb_cam_mipi_parse_cfg(char *filename, int fps, int resolution, int entry_num);
-extern int hb_vin_init(uint32_t entry_num);
-extern int hb_vin_stop(uint32_t entry_num);
-extern int hb_vin_start(uint32_t entry_num);
-extern int hb_vin_deinit(uint32_t entry_num);
-extern int hb_vin_reset(uint32_t entry_num);
-extern int hb_vin_snrclk_set_en(uint32_t entry_num, uint32_t enable);
-extern int hb_vin_snrclk_set_freq(uint32_t entry_num, uint32_t freq);
-extern int hb_vin_chn_bypass(uint32_t port, uint32_t enable, uint32_t mux_sel, uint32_t chn_mask);
-extern int hb_vin_iar_bypass(uint32_t port, uint32_t enable, uint32_t enable_frame_id, uint32_t init_frame_id);
-extern int hb_vin_set_bypass(uint32_t port, uint32_t enable);
-extern int hb_vin_pre_request(uint32_t entry_num, uint32_t type, uint32_t timeout);
-extern int hb_vin_pre_result(uint32_t entry_num, uint32_t type, uint32_t result);
-extern int hb_vin_ipi_reset(uint32_t entry_num, int32_t ipi, uint32_t enable);
-extern int hb_vin_ipi_fatal(uint32_t entry_num, int32_t ipi);
-extern int hb_vin_open(uint32_t entry_num);
-extern int hb_vin_close(uint32_t entry_num);
+extern int32_t hb_vin_mipi_parse_cfg(const char *filename, int32_t fps, int32_t resolution, uint32_t entry_num);
+extern int32_t hb_vin_mipi_init(uint32_t entry_num);
+extern int32_t hb_vin_mipi_stop(uint32_t entry_num);
+extern int32_t hb_vin_mipi_start(uint32_t entry_num);
+extern int32_t hb_vin_mipi_deinit(uint32_t entry_num);
+extern int32_t hb_vin_mipi_reset(uint32_t entry_num);
+extern int32_t hb_vin_mipi_snrclk_set_en(uint32_t entry_num, uint32_t enable);
+extern int32_t hb_vin_mipi_snrclk_set_freq(uint32_t entry_num, uint32_t freq);
+extern int32_t hb_vin_mipi_chn_bypass(uint32_t port, uint32_t enable, uint32_t mux_sel, uint32_t chn_mask);
+extern int32_t hb_vin_mipi_iar_bypass(uint32_t port, uint32_t enable, uint32_t enable_frame_id, uint32_t init_frame_id);
+extern int32_t hb_vin_mipi_set_bypass(uint32_t port, uint32_t enable);
+extern int32_t hb_vin_mipi_pre_request(uint32_t entry_num, uint32_t type, uint32_t timeout);
+extern int32_t hb_vin_mipi_pre_result(uint32_t entry_num, uint32_t type, uint32_t result);
+extern int32_t hb_vin_mipi_ipi_reset(uint32_t entry_num, int32_t ipi, uint32_t enable);
+extern int32_t hb_vin_mipi_ipi_fatal(uint32_t entry_num, int32_t ipi);
+extern int32_t hb_vin_mipi_ipi_get_info(uint32_t entry_num, int32_t ipi, void *info);
+extern int32_t hb_vin_mipi_ipi_set_info(uint32_t entry_num, int32_t ipi, const void *info);
+
+enum {
+	HB_MIPI_PRE_TYPE_INIT,
+	HB_MIPI_PRE_TYPE_START,
+};
 
 #ifdef __cplusplus
 }
