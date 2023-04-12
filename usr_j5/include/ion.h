@@ -18,30 +18,30 @@
  *  limitations under the License.
  */
 
-#ifndef __SYS_CORE_ION_H
-#define __SYS_CORE_ION_H
+#ifndef SYS_CORE_ION_H
+#define SYS_CORE_ION_H
 
+#include <stdint.h>
 #include "linux/ion.h"
 
 __BEGIN_DECLS
 
-int ion_open();
-int ion_close(int fd);
-int ion_alloc(int fd, size_t len, size_t align, unsigned int heap_mask,
-	      unsigned int flags, ion_user_handle_t *handle);
-int ion_alloc_fd(int fd, size_t len, size_t align, unsigned int heap_mask,
-		 unsigned int flags, int *handle_fd);
-int ion_sync_fd(int fd, int handle_fd);
-int ion_free(int fd, ion_user_handle_t handle);
-int ion_map(int fd, ion_user_handle_t handle, size_t length, int prot,
-            int flags, off_t offset, unsigned char **ptr, int *map_fd);
-int ion_share(int fd, ion_user_handle_t handle, int *share_fd);
-int ion_import(int fd, int share_fd, ion_user_handle_t *handle);
-int ion_phys(int fd, ion_user_handle_t handle, void **paddr, size_t *len);
-int ion_cache_invalid(int fd, ion_user_handle_t handle, void *paddr, void *vaddr, size_t len);
-int ion_cache_flush(int fd, ion_user_handle_t handle, void *paddr, void *vaddr, size_t len);
-int ion_memcpy(int fd, ion_user_handle_t handle, void *dst_paddr, void *src_paddr, size_t len);
-int ion_cache_flush_all(int fd, ion_user_handle_t handle);
+int32_t ion_open(void);
+int32_t ion_close(int32_t fd);
+int32_t ion_alloc(int32_t fd, size_t len, size_t align, uint32_t heap_mask,
+			uint32_t flags, ion_user_handle_t *handle);
+int32_t ion_alloc_fd(int32_t fd, size_t len, size_t align, uint32_t heap_mask,
+			uint32_t flags, int32_t *handle_fd);
+int32_t ion_sync_fd(int32_t fd, int32_t handle_fd);
+int32_t ion_free(int32_t fd, ion_user_handle_t handle);
+int32_t ion_map(int32_t fd, ion_user_handle_t handle, size_t length, int32_t prot,
+			int32_t flags, off_t offset, unsigned char **ptr, int32_t *map_fd);
+int32_t ion_share(int32_t fd, ion_user_handle_t handle, int32_t *share_fd);
+int32_t ion_import(int32_t fd, int32_t share_fd, ion_user_handle_t *handle);
+int32_t ion_phys(int32_t fd, ion_user_handle_t handle, void **paddr, size_t *len);
+int32_t ion_cache_invalid(int32_t fd, ion_user_handle_t handle, void *paddr, void *vaddr, size_t len);
+int32_t ion_cache_flush(int32_t fd, ion_user_handle_t handle, void *paddr, void *vaddr, size_t len);
+int32_t ion_memcpy(int32_t fd, ion_user_handle_t handle, void *dst_paddr, void *src_paddr, size_t len);
 
 __END_DECLS
 

@@ -25,7 +25,6 @@ extern "C" {
 #include <sys/types.h>
 #include <unistd.h>
 #include <mqueue.h>
-#include <diag_log.h>
 
 #ifdef __cplusplus
 }
@@ -110,6 +109,40 @@ struct diag_unmask_id {
 };
 
 #define DIAGLIB_ERR_DATA_LEN	128
+/*
+ * @Description: diaglib error definition
+ * @err_id: error ID, each module may have several error IDs.
+ * @err_level: error level, three levels.
+ * @when: time of currence, maybe unsed.
+ * @err_flag: error flag to mark whether it is an error or not.
+ * @module_id: module ID.
+ * @err_data: error data, maybe unused.
+ */
+typedef struct diaglib_err {
+    uint8_t err_id;
+    uint8_t err_level;
+    uint8_t err_flag;
+    uint8_t when;
+    uint32_t sec;
+    uint16_t msec;
+    uint16_t module_id;
+    uint8_t err_data[DIAGLIB_ERR_DATA_LEN];
+    uint8_t env_len;
+    uint8_t sys_err_level;
+} diaglib_err_t;
+
+/*
+ * @Description: diaglib error message definition
+ * @err: diaglib error information
+ * @checksum: checksum of error data
+ * @dummy: placeholder for future use.
+ */
+typedef struct diaglib_err_msg {
+	diaglib_err_t err;
+	uint8_t msg_type;
+	uint32_t checksum;
+	uint32_t dummy;
+} diaglib_err_msg_t;
 
 struct message {
 	uint32_t msg_id;
@@ -128,37 +161,6 @@ typedef enum {
 	DIAG_LIB_OK,
 	DIAG_LIB_NOT_EXIST,
 } TDisg_lib_status;
-
-#define NOT_SUPPORT -1;
-#define DIAGLIB_ERR_DATA_LEN	128
-
-typedef struct diaglib_err {
-	uint8_t err_id;
-	uint8_t err_level;
-	uint8_t err_flag;
-	uint8_t when;
-	uint16_t module_id;
-	uint8_t err_data[DIAGLIB_ERR_DATA_LEN];
-	uint8_t env_len;
-	uint8_t sys_err_level;
-} diaglib_err_t;
-
-typedef struct diaglib_err_msg {
-	diaglib_err_t err;
-	uint8_t msg_type;
-	uint32_t checksum;
-	uint32_t dummy;
-} diaglib_err_msg_t;
-
-typedef struct diag_alivetick {
-    uint8_t step1;
-    uint8_t step2;
-    uint8_t step3;
-    uint8_t step_invalid;
-    uint16_t module_id;
-    uint64_t time_stamp_ms;
-    uint64_t checksum;
-} diag_alivetick_t;
 
 // extern TDisg_lib_status diag_msg_app_unmask_id_set(struct diag_unmask_id
 // *unmask_id);
@@ -194,23 +196,6 @@ DIAG_LIB_EXT TDisg_lib_status diag_ipc_lib_deinit(void);
 DIAG_LIB_EXT TDisg_lib_status diag_ipc_lib_rcvmsg(struct message *pmsg);
 DIAG_LIB_EXT TDisg_lib_status diag_ipc_lib_sndmsg(int32_t qid, uint8_t *buffer,
 													uint32_t len);
-
-DIAG_LIB_EXT TDisg_lib_status diag_netlink_lib_init(void);
-DIAG_LIB_EXT TDisg_lib_status diag_netlink_lib_deinit(void);
-// DIAG_LIB_EXT TDisg_lib_status diag_netlink_lib_rcvmsg(user_msg_info *pmsg);
-DIAG_LIB_EXT TDisg_lib_status diag_netlink_lib_sndmsg(uint8_t *buff,
-                                                      uint32_t len);
-/* everything is ok, now start diag driver */
-DIAG_LIB_EXT TDisg_lib_status
-diag_netlink_lib_driver_sta_set(uint8_t ioctrlsta);
-DIAG_LIB_EXT TDisg_lib_status diag_netlink_get_mod_event_sta(uint32_t moduleid,
-                                                             uint32_t event_id);
-extern int32_t send_sfmu_msg(diaglib_err_msg_t *msg, uint32_t if_block);
-extern int32_t receive_sfmu_msg(diaglib_err_msg_t *msg);
-extern int32_t diag_set_alivetick(diag_alivetick_t *alivetick);
-extern int32_t diag_send_alivetick_msg(diag_alivetick_t alivetick);
-extern int32_t diag_clear_alivetick(diag_alivetick_t *alivetick);
-
 DIAG_LIB_EXT TDisg_lib_status diag_sfmu_lib_init(void);
 DIAG_LIB_EXT TDisg_lib_status diag_sfmu_lib_deinit(void);
 DIAG_LIB_EXT TDisg_lib_status diag_sfmu_lib_rcvmsg(diaglib_err_msg_t *msg);

@@ -39,15 +39,15 @@ extern "C" {
 
 #define REQ_FROM_CLIENT_NUM_MAX 30
 typedef struct {
-	uint8_t req_from_client[REQ_FROM_CLIENT_NUM_MAX];
-	uint8_t *resp_to_client;
+  uint8_t req_from_client[REQ_FROM_CLIENT_NUM_MAX];
+  uint8_t *resp_to_client;
 } zmq_il_data;
 ZMQ_SERVER_EXT zmq_il_data zmq_il_msg;
 
 typedef enum {
-	zmq_service_sts_dis = 0,
-	zmq_service_sts_en,
-	zmq_service_sts_end
+  zmq_service_sts_dis = 0,
+  zmq_service_sts_en,
+  zmq_service_sts_end
 } enzmq_service_sts;
 ZMQ_SERVER_EXT enzmq_service_sts zmq_service_sts;
 

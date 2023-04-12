@@ -20,7 +20,7 @@ class InputProcessor {
  public:
   /**
    * InputProcessor
-   * @param[out] tensor
+   * @param[inout] tensor
    * @param[in] input_desc
    * @param[in]  input
    * @return 0 if success, return defined error code otherwise

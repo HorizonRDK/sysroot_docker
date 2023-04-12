@@ -23,7 +23,6 @@ extern "C" {
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <diag_log.h>
 
 #ifdef __cplusplus
 }
@@ -36,18 +35,15 @@ extern "C" {
 #endif
 
 struct dtc_id_base_index {
-	uint16_t dtc_id_base;
-	uint8_t dtc_id_offset;
+  uint16_t dtc_id_base;
+  uint8_t dtc_id_offset;
 };
 
-typedef enum _dtc_type {
-	DTC_KERNEL,
-	DTC_MODEL,
-	DTC_PERCEPTION,
-	DTC_ADAS,
-	DTC_AP,
-	DTC_MAX
-} dtc_type_e;
+#define KERNEL_DTC_LENGTH 4
+#define MODEL_DTC_LENGTH 2
+#define PERCEPTION_DTC_LENGTH 4
+#define ADAS_DTC_LENGTH 2
+#define AP_DTC_LENGTH 4
 
 #define KERNEL_DTC_ID_OFFSET 0
 #define MODEL_DTC_ID_OFFSET 4
@@ -66,15 +62,15 @@ extern uint8_t *g_shm_data;
 extern struct dtc_id_base_index dtc_index[];
 
 typedef enum {
-	DIAG_SHM_ERROR = -1,
-	DIAG_SHM_OK,
+  DIAG_SHM_ERROR = -1,
+  DIAG_SHM_OK,
 } diag_shm_status;
 
 typedef struct _diag_data_ {
-	/* data */
-	uint16_t dtc_id_base;
-	uint8_t dtc_status_len;
-	uint8_t *dtc_status;
+    /* data */
+    uint16_t dtc_id_base;
+    uint8_t dtc_status_len;
+    uint8_t *dtc_status;
 } diag_data_t;
 
 #ifdef __cplusplus

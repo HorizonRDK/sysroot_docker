@@ -14,10 +14,10 @@
 #ifndef INCLUDE_LOGGING_H_
 #define INCLUDE_LOGGING_H_
 
+#define ALOG_SUPPORT 1
+
 #include <stdio.h>
 #include <stdlib.h>
-#define ALOG_SUPPORT
-
 #ifdef ALOG_SUPPORT
 #include <log.h>
 #endif
@@ -29,14 +29,10 @@
 #ifndef SUBSYS_NAME
 #define SUBSYS_NAME
 #endif
-#ifndef LOG_TAG
-#define LOG_TAG "LOGLEVEL"
-#endif
-#define SUBSYS STRINGIZE(LOG_TAG)
-#define LOG_TAGS LOG_TAG
+#define SUBSYS STRINGIZE(SUBSYS_NAME)
 
 #define L_INFO "[INFO][" SUBSYS "][" HERE "] "
-#define L_WARNING "[WARNING][" SUBSYS "][" HERE "] "
+#define L_WARNING "[WARNING]" SUBSYS "][" HERE "] "
 #define L_ERROR "[ERROR][" SUBSYS "][" HERE "] "
 #define L_DEBUG "[DEBUG][" SUBSYS "][" HERE "] "
 
@@ -72,10 +68,7 @@ static inline int get_loglevel(void)
 	char *loglevel_env = NULL;
 	int loglevel_value = CONSOLE_ERROR_LEVEL;
 
-	loglevel_env = getenv(LOG_TAGS);
-	if (loglevel_env == NULL) {
-		loglevel_env = getenv(LOGLEVEL_ENV);
-	}
+	loglevel_env = getenv(LOGLEVEL_ENV);
 	if (loglevel_env != NULL) {
 		loglevel_value = atoi(loglevel_env);
 		/* loglevel value should in the configuration area */
@@ -85,6 +78,7 @@ static inline int get_loglevel(void)
 				 (loglevel_value <= ALOG_DEBUG_LEVEL)))
 			return loglevel_value;
 	}
+
 	/* default log level */
 	loglevel_value = CONSOLE_ERROR_LEVEL;
 

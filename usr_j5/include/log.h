@@ -65,7 +65,7 @@ extern "C" {
  * before using the other macros to change the tag.
  */
 #ifndef LOG_TAG
-#define LOG_TAG "LOG"
+#define LOG_TAG NULL
 #endif
 
 /*
@@ -482,11 +482,11 @@ typedef enum {
  * The stuff in the rest of this file should not be used directly.
  */
 
-#define android_printLog(prio, tag, ...) \
-	__android_log_print(prio, tag, ## __VA_ARGS__)
+#define android_printLog(prio, tag, fmt...) \
+	__android_log_print(prio, tag, fmt)
 
-#define android_vprintLog(prio, cond, tag, ...) \
-	__android_log_vprint(prio, tag, ## __VA_ARGS__)
+#define android_vprintLog(prio, cond, tag, fmt...) \
+	__android_log_vprint(prio, tag, fmt)
 
 /* XXX Macros to work around syntax errors in places where format string
  * arg is not passed to ALOG_ASSERT, LOG_ALWAYS_FATAL or LOG_ALWAYS_FATAL_IF
@@ -503,9 +503,9 @@ typedef enum {
  */
 #define __android_rest(first, ...)               , ## __VA_ARGS__
 
-#define android_printAssert(cond, tag, ...) \
+#define android_printAssert(cond, tag, fmt...) \
 	__android_log_assert(cond, tag, \
-		__android_second(0, ## __VA_ARGS__, NULL) __android_rest(__VA_ARGS__))
+		__android_second(0, ## fmt, NULL) __android_rest(fmt))
 
 #define android_writeLog(prio, tag, text) \
 	__android_log_write(prio, tag, text)

@@ -3,8 +3,8 @@
  *            Copyright 2019 Horizon Robotics, Inc.
  *                   All rights reserved.
  *************************************************************************/
-#ifndef __HB_MEDIA_BASIC_TYPES_H__
-#define __HB_MEDIA_BASIC_TYPES_H__
+#ifndef HB_MEDIA_BASIC_TYPES_H
+#define HB_MEDIA_BASIC_TYPES_H
 
 #include <stdint.h>
 
@@ -68,4 +68,4 @@ typedef unsigned char *hb_byte;
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* __HB_MEDIA_BASIC_TYPES_H__ */
+#endif /* HB_MEDIA_BASIC_TYPES_H */

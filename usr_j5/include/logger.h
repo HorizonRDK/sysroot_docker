@@ -52,7 +52,7 @@ struct logger_entry_v2 {
 /*
  * The maximum size of the log entry payload that can be
  * written to the kernel logger driver. An attempt to write
- * more than this amount to /dev/log/* will result in a
+ * more than this amount to /dev/log_* will result in a
  * truncated log entry.
  */
 #define LOGGER_ENTRY_MAX_PAYLOAD	4076

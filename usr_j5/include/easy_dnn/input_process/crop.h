@@ -40,22 +40,22 @@ namespace easy_dnn {
 class CropDescription : public InputDescription {
  public:
   CropDescription(Model* model,
-                  int index,
+                  int32_t index,
                   std::string type = "",
-                  int x = 0,
-                  int y = 0,
-                  int width = 0,
-                  int height = 0)
+                  int32_t x = 0,
+                  int32_t y = 0,
+                  int32_t width = 0,
+                  int32_t height = 0)
       : InputDescription(model, index, type),
         x(x),
         y(y),
         width(width),
         height(height) {}
 
-  int x;
-  int y;
-  int width;   // 0 means crop to the right edge [x,...]
-  int height;  // 0 means crop to the bottom edge [y, ...]
+  int32_t x;
+  int32_t y;
+  int32_t width;   // 0 means crop to the right edge [x,...]
+  int32_t height;  // 0 means crop to the bottom edge [y, ...]
 
   friend std::ostream& operator<<(std::ostream& os, CropDescription* desc) {
     os << "CropDescription: x=" << desc->x << ", y=" << desc->y

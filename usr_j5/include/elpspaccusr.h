@@ -70,7 +70,7 @@ enum {
 
 struct elp_spacc_usr_ddt {
    void __user *ptr;
-   long unsigned int          len;
+   int          len;
 };
 
 #define ELP_SPACC_SRC_DDT(fd, x, addr, len) do { (fd)->io.src[x] = (struct elp_spacc_usr_ddt){(addr),(len)}; } while (0);
@@ -110,37 +110,34 @@ struct elp_spacc_features {
       qos,
       max_msg_size;
    unsigned char
-      modes[CRYPTO_MODE_LAST + 1];
+      modes[CRYPTO_MODE_LAST];
 };
 
 struct elp_spacc_ioctl {
    unsigned char
                 cmd,           // ioctl command
-                auxinfo_align, // bit align for 3G modes
-                auxinfo_dir,   // direction for 3G modes
-                partial;       // MSG_BEGIN/MSG_END flags
-   int
-                map_hint,
+                cipher_mode,   // cipher mode
                 aad_copy,      // copy the AAD or not
+                hash_mode,     // hash mode
                 icv_len,       // ICV length (0 for default)
                 icv_mode,      // how to handle the ICV
+                encrypt,       // 1 to set encrypt mode
                 ckeylen,       // cipher key length
                 civlen,        // cipher IV length
                 hkeylen,       // hash key length
                 hivlen,        // hash IV length
-                encrypt,       // 1 to set encrypt mode
-                cipher_mode,   // cipher mode
-                hash_mode,     // hash mode
+                auxinfo_align, // bit align for 3G modes
+                auxinfo_dir,   // direction for 3G modes
+                partial,       // MSG_BEGIN/MSG_END flags
+                map_hint;
+   int
                 err;
 
    struct elp_spacc_usr_ddt
                 src[ELP_SPACC_USR_MAX_DDT+1],
                 dst[ELP_SPACC_USR_MAX_DDT+1];
 
-   unsigned long          srclen, dstlen;
-// despite the DDTs above these need to be filled in to
-// make things simpler inside the kernel
-   int
+   int          srclen, dstlen,              // despite the DDTs above these need to be filled in to make things simpler inside the kernel
                 src_offset, dst_offset,      // offsets into buffers
                 pre_aad_len, post_aad_len,   // AAD lengths before and after plaintext (if any)
                 ivoffset;                    // offset in packet for IV, or -1 to not use import

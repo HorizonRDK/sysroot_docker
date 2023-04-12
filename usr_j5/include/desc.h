@@ -89,9 +89,9 @@ typedef void (*DescFuncType)(void);
 #define DTCFormatIdentifierISO14229_1DTCFormat 1
 
 typedef struct Desc_stLngTmRspInfo_ {
-	uint8_t u1RspSID;
-	uint8_t u1DID0;
-	uint8_t u1DID1;
+  uint8_t u1RspSID;
+  uint8_t u1DID0;
+  uint8_t u1DID1;
 } Desc_stLngTmRspInfo;
 DESC_EXT Desc_stLngTmRspInfo Desc_stgLngTmRspInfo;
 

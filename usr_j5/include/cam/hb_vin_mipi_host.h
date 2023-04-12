@@ -23,22 +23,21 @@ extern "C"
 #include <linux/types.h>
 #include "hb_vin_common.h"
 
-int hb_vin_mipi_host_start(entry_t *e);
-int hb_vin_mipi_host_stop(entry_t *e);
-int hb_vin_mipi_host_open(entry_t *e);
-int hb_vin_mipi_host_init(entry_t *e);
-int hb_vin_mipi_host_deinit(entry_t *e);
-int hb_vin_mipi_host_parser_config(void *root, entry_t *e);
-int hb_vin_mipi_host_snrclk_set_en(entry_t *e, uint32_t enable);
-int hb_vin_mipi_host_snrclk_set_freq(entry_t *e, uint32_t freq);
-int hb_vin_mipi_host_pre_init_request(entry_t *e, uint32_t timeout);
-int hb_vin_mipi_host_pre_start_request(entry_t *e, uint32_t timeout);
-int hb_vin_mipi_host_pre_init_result(entry_t *e, uint32_t result);
-int hb_vin_mipi_host_pre_start_result(entry_t *e, uint32_t result);
-int hb_vin_mipi_host_ipi_reset(entry_t *e, int32_t ipi, uint32_t enable);
-int hb_vin_mipi_host_ipi_fatal(entry_t *e, int32_t ipi);
-int hb_vin_mipi_host_ipi_get_info(entry_t *e, int32_t ipi, mipi_host_ipi_info_t *info);
-int hb_vin_mipi_host_ipi_set_info(entry_t *e, int32_t ipi, mipi_host_ipi_info_t *info);
+int32_t hb_vin_mipi_host_start(const entry_t *e);
+int32_t hb_vin_mipi_host_stop(const entry_t *e);
+int32_t hb_vin_mipi_host_init(entry_t *e);
+int32_t hb_vin_mipi_host_deinit(entry_t *e);
+int32_t hb_vin_mipi_host_parser_config(const void *root, entry_t *e);
+int32_t hb_vin_mipi_host_snrclk_set_en(entry_t *e, uint32_t enable);
+int32_t hb_vin_mipi_host_snrclk_set_freq(entry_t *e, uint32_t freq);
+int32_t hb_vin_mipi_host_pre_init_request(entry_t *e, uint32_t timeout);
+int32_t hb_vin_mipi_host_pre_start_request(entry_t *e, uint32_t timeout);
+int32_t hb_vin_mipi_host_pre_init_result(entry_t *e, uint32_t result);
+int32_t hb_vin_mipi_host_pre_start_result(entry_t *e, uint32_t result);
+int32_t hb_vin_mipi_host_ipi_reset(entry_t *e, int32_t ipi, uint32_t enable);
+int32_t hb_vin_mipi_host_ipi_fatal(entry_t *e, int32_t ipi);
+int32_t hb_vin_mipi_host_ipi_get_info(entry_t *e, int32_t ipi, mipi_host_ipi_info_t *info);
+int32_t hb_vin_mipi_host_ipi_set_info(entry_t *e, int32_t ipi, const mipi_host_ipi_info_t *info);
 
 #ifdef __cplusplus
 }

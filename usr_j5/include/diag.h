@@ -11,7 +11,7 @@
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
-#include <diag_log.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/netlink.h>
@@ -40,7 +40,6 @@ extern "C" {
 typedef enum {
 	DIAG_REL_NULL,
 	DIAG_REL_DEBUG,
-	DIAG_REL_HBIPC_DEBUG,
 	DIAG_REL_SPI_DEBUG,
 	DIAG_REL_ZMQ_DEBUG,
 	DIAG_REL_RELEASE,
@@ -48,14 +47,6 @@ typedef enum {
 } DIAG_REL_MODE;
 
 DIAG_EXT DIAG_REL_MODE DiagRelMode;
-
-typedef enum {
-	HBIPC_SW_NULL,
-	HBIPC_SW_OFF,
-	HBIPC_SW_ON,
-	HBIPC_SW_END
-} HBIPC_SW_TBL;
-DIAG_EXT HBIPC_SW_TBL hbipc_switch_sts;
 
 typedef enum {
 	SPI_SW_NULL,
@@ -87,24 +78,24 @@ DIAG_EXT GLOBAL_CONFIG global_config;
 #define TOTAL_APP_MODULE_NUM 5
 
 typedef enum {
-	HBSOC_OK = 0,
-	HBSOC_ALREADY_INITED = 1,
-	HBSOC_FAIL = -1,
-	HBSOC_INVALID_REQ = -2,
-	HBSOC_NOT_INITED = -3,
-	HBSOC_INVALID_ENGINE_TYPE = -4,
-	HBSOC_INPUT_BUFFER_FULL = -5,
-	HBSOC_INVALID_PARAM = -6,
-	HBSOC_TIMEOUT = -7,
+	J2SOC_OK = 0,
+	J2SOC_ALREADY_INITED = 1,
+	J2SOC_FAIL = -1,
+	J2SOC_INVALID_REQ = -2,
+	J2SOC_NOT_INITED = -3,
+	J2SOC_INVALID_ENGINE_TYPE = -4,
+	J2SOC_INPUT_BUFFER_FULL = -5,
+	J2SOC_INVALID_PARAM = -6,
+	J2SOC_TIMEOUT = -7,
 
-	HBSOC_AUTH_CONN_FAIL = -100,
-	HBSOC_AUTH_OFFLINE_FAIL = -101,
-	HBSOC_AUTH_ONLINE_FAIL = -102,
+	J2SOC_AUTH_CONN_FAIL = -100,
+	J2SOC_AUTH_OFFLINE_FAIL = -101,
+	J2SOC_AUTH_ONLINE_FAIL = -102,
 
-	HBSOC_NETWORK_ERR = -106,
+	J2SOC_NETWORK_ERR = -106,
 
-	HBSOC_SYSTIME_ERR = -107,
-} HBSOC_STATUS;
+	J2SOC_SYSTIME_ERR = -107,
+} J2SOC_STATUS;
 
 #define UDS_TIME_STEP 50  // 50ms
 
@@ -133,9 +124,5 @@ DIAG_EXT void dtc_list_management(void);
 DIAG_EXT int diagnose_init(void);
 DIAG_EXT int diagnose_deinit(void);
 DIAG_EXT int spi_thread_init(void);
-DIAG_EXT void spi_thread_cancel(void);
-DIAG_EXT void spi_thread_join(void);
-DIAG_EXT void diagnose_thread_cancel(void);
-DIAG_EXT void diagnose_thread_join(void);
 
 #endif

@@ -38,11 +38,11 @@ extern "C" {
 #endif
 
 typedef enum {
-	diag_zmq_resp_null,
-	diag_zmq_resp_req_err,
-	diag_zmq_resp_uds_oping,
-	diag_zmq_resp_uds_res,
-	diag_zmq_resp_end
+  diag_zmq_resp_null,
+  diag_zmq_resp_req_err,
+  diag_zmq_resp_uds_oping,
+  diag_zmq_resp_uds_res,
+  diag_zmq_resp_end
 } diag_zmq_resp_type;
 ZMQ_DIAG_IL_EXT diag_zmq_resp_type diag_zmq_resp_map_type;
 
@@ -55,17 +55,22 @@ ZMQ_DIAG_IL_EXT diag_zmq_resp_type diag_zmq_resp_map_type;
 #define RESP_COMM_ID_SET 0x0302
 
 typedef struct {
-	uint8_t msgid[2];  // msgid[0]---high byte
-	uint8_t msglen[4];  // msglen[0]---high byte
-	uint8_t protocol_id[4];  // protocol_id[0]---high byte
-	uint8_t time_stamp[8];
-	uint8_t comm_id[2];  // comm_id[0]---high byte
-	uint8_t comm_len[4];  // comm_len[0]---high byte
+  uint8_t msgid[2];  // msgid[0]---high byte
+
+  uint8_t msglen[4];  // msglen[0]---high byte
+
+  uint8_t protocol_id[4];  // protocol_id[0]---high byte
+
+  uint8_t time_stamp[8];
+
+  uint8_t comm_id[2];  // comm_id[0]---high byte
+
+  uint8_t comm_len[4];  // comm_len[0]---high byte
 } __attribute__((packed)) zmq_diag_il_head;
 
 typedef struct {
-	zmq_diag_il_head head;
-	uint8_t *data;
+  zmq_diag_il_head head;
+  uint8_t *data;
 } __attribute__((packed)) zmq_diag_il_pack;
 ZMQ_DIAG_IL_EXT zmq_diag_il_pack zmq_diag_req;
 ZMQ_DIAG_IL_EXT zmq_diag_il_pack zmq_diag_resp;

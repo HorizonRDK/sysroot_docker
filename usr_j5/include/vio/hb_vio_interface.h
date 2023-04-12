@@ -1,559 +1,554 @@
-/***************************************************************************
-* COPYRIGHT NOTICE
-* Copyright 2019 Horizon Robotics, Inc.
-* All rights reserved.
-***************************************************************************/
-#ifndef HB_X2A_VIO_HB_VIO_INTERFACE_H
-#define HB_X2A_VIO_HB_VIO_INTERFACE_H
+/*
+ * Horizon Robotics
+ *
+ * Copyright (C) 2020 Horizon Robotics Inc.
+ * All rights reserved.
+ * Author: 
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+#ifndef HB_VIO_INTERFACE_H__
+#define HB_VIO_INTERFACE_H__
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#include <string.h>
 #include <stdint.h>
-#include <sys/time.h>
+#include "hb_vin_data_info.h"
+#include "hb_vpm_data_info.h"
 
-#define HB_VIO_PYM_MAX_BASE_LAYER 6
-#define HB_VIO_BUFFER_MAX_PLANES 3
-#define HB_VIO_BUFFER_PREPARE 4
+#define HB_VIO_ISP_DUMP_EN
+#define HB_VIO_IPU_EN
+#define MULTI_FLAG_PATH "/sys/module/hobot_cim/parameters/vio_mp_en"
 
-// callback enable when bit set 1 else disable the cb
-#define HB_VIO_IPU_DS0_CB_MSG	0x001
-#define HB_VIO_IPU_DS1_CB_MSG	0x002
-#define HB_VIO_IPU_DS2_CB_MSG	0x004
-#define HB_VIO_IPU_DS3_CB_MSG	0x008
-#define HB_VIO_IPU_DS4_CB_MSG	0x010
-#define HB_VIO_IPU_US_CB_MSG	0x020
-#define HB_VIO_PYM_CB_MSG		0x040
-#define HB_VIO_DIS_CB_MSG		0x080
-#define HB_VIO_PYM_VER2_CB_MSG		0x100
+#define OPEN_FLAG_RO        (0)
+#define OPEN_FLAG_RW        (2)
+#define HB_ISP_CTX_ID_0     (0)
+#define HB_ISP_CTX_ID_1     (1)
+#define HB_ISP_CTX_ID_2     (2)
+#define HB_ISP_CTX_ID_3     (3)
+#define HB_ISP_SW_ID_OFFSET (4)
 
-#define HB_VIO_PYM_MAX_LAYER 30
+// vio state check
+#define HB_DEFAULT          (0)
+#define HB_VIN_INIT         (1)
+#define HB_VIN_DEINIT       (2)
+#define HB_VIN_START        (3)
+#define HB_VIN_STOP         (4)
+#define HB_VPM_INIT         (5)
+#define HB_VPM_DEINIT       (6)
+#define HB_VPM_START        (7)
+#define HB_VPM_STOP         (8)
 
-
-typedef enum VIO_INFO_TYPE_S {
-	HB_VIO_CALLBACK_ENABLE = 0,
-	HB_VIO_CALLBACK_DISABLE,
-	HB_VIO_IPU_SIZE_INFO,	//reserve for ipu size setting in dis
-	HB_VIO_IPU_US_IMG_INFO,
-	HB_VIO_IPU_DS0_IMG_INFO,
-	HB_VIO_IPU_DS1_IMG_INFO,
-	HB_VIO_IPU_DS2_IMG_INFO,
-	HB_VIO_IPU_DS3_IMG_INFO,
-	HB_VIO_IPU_DS4_IMG_INFO,
-	HB_VIO_PYM_IMG_INFO,
-	HB_VIO_ISP_IMG_INFO,
-	HB_VIO_PYM_V2_IMG_INFO,
-	HB_VIO_IPU_US_ROI_INFO,
-	HB_VIO_IPU_DS0_ROI_INFO,
-	HB_VIO_IPU_DS1_ROI_INFO,
-	HB_VIO_IPU_DS2_ROI_INFO,
-	HB_VIO_IPU_DS3_ROI_INFO,
-	HB_VIO_IPU_DS4_ROI_INFO,
-	HB_VIO_INFO_MAX
-} VIO_INFO_TYPE_E;
-
-typedef enum VIO_CALLBACK_TYPE {
-	HB_VIO_IPU_DS0_CALLBACK = 0,
-	HB_VIO_IPU_DS1_CALLBACK,
-	HB_VIO_IPU_DS2_CALLBACK,
-	HB_VIO_IPU_DS3_CALLBACK,
-	HB_VIO_IPU_DS4_CALLBACK,
-	HB_VIO_IPU_US_CALLBACK,
-	HB_VIO_PYM_CALLBACK,	// 6
-	HB_VIO_DIS_CALLBACK,
-	HB_VIO_PYM_V2_CALLBACK,
-	HB_VIO_MAX_CALLBACK
-} VIO_CALLBACK_TYPE_E;
-
-typedef enum VIO_DATA_TYPE_S {
-	HB_VIO_IPU_DS0_DATA = 0,
-	HB_VIO_IPU_DS1_DATA,
-	HB_VIO_IPU_DS2_DATA,
-	HB_VIO_IPU_DS3_DATA,
-	HB_VIO_IPU_DS4_DATA,
-	HB_VIO_IPU_US_DATA,	// 5
-	HB_VIO_PYM_FEEDBACK_SRC_DATA,	// for debug
-	HB_VIO_PYM_DATA,
-	HB_VIO_SIF_FEEDBACK_SRC_DATA,
-	HB_VIO_SIF_RAW_DATA,	// 9
-	HB_VIO_SIF_YUV_DATA,
-	HB_VIO_ISP_YUV_DATA,	// 11 for debug, a process result for raw feedback
-	HB_VIO_GDC_DATA,
-	HB_VIO_GDC1_DATA,
-	HB_VIO_IARWB_DATA,
-	HB_VIO_GDC_FEEDBACK_SRC_DATA,
-	HB_VIO_GDC1_FEEDBACK_SRC_DATA,
-	HB_VIO_PYM_LAYER_DATA,
-	HB_VIO_MD_DATA,
-	HB_VIO_ISP_RAW_DATA,
-	HB_VIO_PYM_COMMON_DATA,
-	HB_VIO_PYM_DATA_V2,
-	HB_VIO_CIM_RAW_DATA,
-	HB_VIO_CIM_YUV_DATA,
-	HB_VIO_EMBED_DATA,
-	HB_VIO_IPU_ALL_CHN_DATA,
-	HB_VIO_DATA_TYPE_MAX
-} VIO_DATA_TYPE_E;
-
-typedef enum buffer_state {
-	BUFFER_AVAILABLE,
-	BUFFER_PROCESS,
-	BUFFER_DONE,
-	BUFFER_REPROCESS,
-	BUFFER_USER,
-	BUFFER_INVALID
-} buffer_state_e;
-
-/* info :
- * y,uv             2 plane
- * raw              1 plane
- * raw, raw         2 plane(dol2)
- * raw, raw, raw    3 plane(dol3)
- **/
-typedef struct address_info_s {
-	uint16_t width;
-	uint16_t height;
-	uint16_t stride_size;
-	char *addr[HB_VIO_BUFFER_MAX_PLANES];
-	uint64_t paddr[HB_VIO_BUFFER_MAX_PLANES];
-} address_info_t;
-
-typedef struct image_info_s {
-	uint16_t sensor_id;
-	uint32_t pipeline_id;
-	uint32_t frame_id;
-	uint64_t time_stamp;//HW time stamp
-	struct timeval tv;//system time of hal get buf
-	int buf_index;
-	int img_format;
-	int fd[HB_VIO_BUFFER_MAX_PLANES];//ion buf fd
-	uint32_t size[HB_VIO_BUFFER_MAX_PLANES];
-	uint32_t planeCount;
-	uint32_t dynamic_flag;
-	uint32_t water_mark_line;
-	VIO_DATA_TYPE_E data_type;
-	buffer_state_e state;
-} image_info_t;
-
-/*
- * buf type  fd[num]                        size[num]                   addr[num]
- *
- * sif buf : fd[0(raw)]                     size[0(raw)]                addr[0(raw)]
- * sif dol2: fd[0(raw),1(raw)]              size[0(raw),1(raw)]         addr[0(raw),1(raw)]
- * sif dol3: fd[0(raw),1(raw),2(raw)]       size[0(raw),1(raw),2(raw)]  addr[0(raw),1(raw),2(raw)]
- * ipu buf : fd[0(y),1(c)]                  size[0(y),1(c)]             addr[0(y),1(c)]
- * pym buf : fd[0(all channel)]             size[0(all output)]         addr[0(y),1(c)] * 24
- * */
-
-// normal capture buffer type, one image data output
-typedef struct hb_vio_buffer_s {
-	image_info_t img_info;
-	address_info_t img_addr;
-} hb_vio_buffer_t;
-
-typedef struct ipu_all_chn_s {
-	int valid[HB_VIO_IPU_US_DATA+1];
-	hb_vio_buffer_t buf[HB_VIO_IPU_US_DATA+1];
-}ipu_all_chn_t;
-
-// special buffer type, multi image data output,
-// but all channel output alloc one ion buffer avoid buf fragment
-
-typedef struct pym_buffer_s {
-	image_info_t pym_img_info;
-	address_info_t pym[6];
-	address_info_t pym_roi[6][3];
-	address_info_t us[6];
-	char *addr_whole[HB_VIO_BUFFER_MAX_PLANES];
-	uint64_t paddr_whole[HB_VIO_BUFFER_MAX_PLANES];
-	uint32_t layer_size[30][HB_VIO_BUFFER_MAX_PLANES];
-} pym_buffer_t;
-
-//use in j3 j5
-typedef struct pym_buffer_common_s {
-	image_info_t pym_img_info;
-	address_info_t pym[HB_VIO_PYM_MAX_BASE_LAYER];//only for base layer
-} pym_buffer_common_t;
-
-typedef struct osd_box_s {
-	uint8_t osd_en;
-	uint8_t overlay_mode;
-	uint16_t start_x;
-	uint16_t start_y;
-	uint16_t width;
-	uint16_t height;
-} osd_box_t;
-
-// for osd draw, Y info sta
-typedef struct osd_sta_box_s {
-	uint8_t sta_en;
-	uint16_t start_x;
-	uint16_t start_y;
-	uint16_t width;
-	uint16_t height;
-} osd_sta_box_t;
-
-typedef struct chn_img_info_s {
-	uint16_t width;
-	uint16_t height;
-	uint16_t format;
-	uint16_t buf_count;
-} chn_img_info_t;
-
-enum Format {
-	HB_RGB,
-	HB_RAW,
-	HB_YUV422,
-	HB_YUV420SP		// only support yuv420sp
-};
-
-typedef struct osd_draw_word_s
-{
-	void *pAddr;
-	uint32_t width;
-	uint32_t height;
-	uint32_t start_x;
-	uint32_t start_y;
-	uint8_t *draw_str;
-	uint32_t font_color;
-	uint32_t font_size;
-	uint32_t bg_color;
-	uint8_t flush_en;
-}osd_draw_word_t;
-
-#define HB_VIO_X2COMP_SUPPORT
-
-#ifdef HB_VIO_X2COMP_SUPPORT
-
-/* for get info type */
-#define HB_VIO_SRC_INFO			1
-#define HB_VIO_PYM_INFO			2
-#define HB_VIO_SIF_INFO			3
-#define HB_VIO_IPU_STATE_INFO	4
-#define HB_VIO_FRAME_START_INFO	5
-#define HB_VIO_PYM_MULT_INFO	6
-#define HB_VIO_SRC_MULT_INFO	7
-#define HB_VIO_FEEDBACK_SRC_INFO 8
-#define HB_VIO_FEEDBACK_FLUSH 9
-#define HB_VIO_FEEDBACK_SRC_MULT_INFO 10
-#define HB_VIO_PYM_INFO_CONDITIONAL 11
-
-/* for ds|us */
-#define DOWN_SCALE_MAIN_MAX 	6
-#define DOWN_SCALE_MAX	24
-#define UP_SCALE_MAX	6
-
-typedef struct addr_info_s {
-	uint16_t width;
-	uint16_t height;
-	uint16_t step;
-	uint64_t y_paddr;
-	uint64_t c_paddr;
-	uint64_t y_vaddr;
-	uint64_t c_vaddr;
-} addr_info_t;
-
-typedef struct src_img_info_s {
-	int cam_id;
-	int slot_id;
-	int img_format;
-	int frame_id;
-	int64_t timestamp;
-	addr_info_t src_img;
-	addr_info_t scaler_img;
-} src_img_info_t;
-
-typedef struct img_info_s {
-	int slot_id;					// getted slot buff
-	int frame_id;					// for x2 may be 0 - 0xFFFF or 0x7FFF
-	int64_t timestamp;				// BT from Hisi; mipi & dvp from kernel time
-	int img_format;					// now only support yuv420sp
-	int ds_pym_layer;				// get down scale layers
-	int us_pym_layer;				// get up scale layers
-	addr_info_t src_img;			// for x2 src img = crop img
-	addr_info_t down_scale[DOWN_SCALE_MAX];
-	addr_info_t up_scale[UP_SCALE_MAX];
-	addr_info_t down_scale_main[DOWN_SCALE_MAIN_MAX];
-	int cam_id;
-} img_info_t;
+/********************************* VIN API *********************************/
+/**
+ * hb_cam_init : init cam, include cmos, mipi, cim/cimdma.
+ * @cfg_index: config index, which cam you want to choose;
+ * @cfg_file: config file path, include cmos/mipi/cim/cimdma configs;
+ */
+int32_t hb_cam_init(uint32_t cfg_index, const char *cfg_file);
 
 /**
- * GDC Frame format
+ * hb_cam_deinit : deinit cam, include cmos, mipi, cim/cimdma.
+ * @cfg_index: config index, which cam you want to choose;
  */
-typedef enum {
-    FMT_UNKNOWN,
-    FMT_LUMINANCE,
-    FMT_PLANAR_444,
-    FMT_PLANAR_420,
-    FMT_SEMIPLANAR_420
-} frame_format_t;
-//---------------------------------------------------------
-/**
- * GDC Rectangle definition
- */
-typedef struct {
-    int32_t x; ///< Start x coordinate
-    int32_t y; ///< Start y coordinate
-    int32_t w; ///< width
-    int32_t h; ///< height
-} rect_t;
-//---------------------------------------------------------
-/**
- * GDC Types of supported transformations
- */
-typedef enum {
-    PANORAMIC,
-    CYLINDRICAL,
-    STEREOGRAPHIC,
-    UNIVERSAL,
-    CUSTOM,
-    AFFINE,
-    DEWARP_KEYSTONE
-} transformation_t;
-//---------------------------------------------------------
+int32_t hb_cam_deinit(uint32_t cfg_index);
 
-//---------------------------------------------------------
 /**
- * GDC Resolution definition
+ * hb_cam_start : start cam, include cmos, mipi, cim/cimdma.
+ * @port: camera port, which cam you want to choose;
  */
-typedef struct {
-    uint32_t w;  ///< width in pixels
-    uint32_t h;  ///< height in pixels
-} resolution_t;
-//---------------------------------------------------------
+int32_t hb_cam_start(uint32_t port);
+
 /**
- * Grid point
+ * hb_cam_stop : deinit cam, include cmos, mipi, cim/cimdma.
+ * @port: camera port, which cam you want to choose;
  */
-typedef struct {
-    double x;  ///< x coordinate
-    double y;  ///< y coordinate
-} point_t;
+int32_t hb_cam_stop(uint32_t port);
 
-//---------------------------------------------------------
 /**
- * Custom transformation structure
+ * hb_cam_start_all : start all cam which you init(in config index), include cmos, mipi, cim/cimdma.
  */
-typedef struct {
-    uint8_t full_tile_calc;
-    uint16_t tile_incr_x;
-    uint16_t tile_incr_y;
-    int32_t w;          ///< Number or points in horizontal direction in the custom transformation grid
-    int32_t h;          ///< Number or points in vertical direction in the custom transformation grid
-    double centerx;     ///< center along x axis
-    double centery;     ///< center along y axis
-    point_t* points;    ///< array with points, number of elements = w*h
-} custom_tranformation_t;
+int32_t hb_cam_start_all(void);
 
-
-//---------------------------------------------------------
 /**
- * Window definition and transformation parameters
- * For parameters meaning read GDC guide
+ * hb_cam_stop_all : stop all cam which you init(in config index), include cmos, mipi, cim/cimdma.
  */
-typedef struct {
-    rect_t out_r;                   ///< Output window position and size
-    transformation_t transform;     ///< Used transformation
-    rect_t input_roi_r;
-    int32_t pan;                    ///< Target shift in horizontal direction from centre of the output image in pixels
-    int32_t tilt;                   ///< Target shift in vertical direction from centre of the output image in pixels
-    double zoom;                    ///< Target zoom dimensionless coefficient (must not be bigger than zero)
-    double strength;                ///< Dimensionless non-negative parameter defining the strength of transformation along X axis
-    double strengthY;               ///< Dimensionless non-negative parameter defining the strength of transformation along X axis
-    double angle;                   ///< Angle of main projection axis rotation around itself in degrees
-    // universal transformation
-    double elevation;               ///< Angle in degrees which specify the main projection axis
-    double azimuth;                 ///< Angle in degrees which specify the main projection axis, counted clockwise from North direction (positive to East)
-    int32_t keep_ratio;             ///< Keep the same stretching strength in both horizontal and vertical directions
-    double FOV_h;                   ///< Size of output field of view in vertical dimension in degrees
-    double FOV_w;                   ///< Size of output field of view in horizontal dimension in degrees
-    double cylindricity_y;          ///< Level of cylindricity for target projection shape in vertical direction
-    double cylindricity_x;          ///< Level of cylindricity for target projection shape in horizontal direction
-    char custom_file[128];          ///< File name of the file containing custom transformation description
-    custom_tranformation_t custom;  ///< Parsed custom transformation structure
-    double trapezoid_left_angle;    ///< Left Acute angle in degrees between trapezoid base and leg
-    double trapezoid_right_angle;   ///< Right Acute angle in degrees between trapezoid base and leg
-    uint8_t check_compute;          ///< Perform fixed point and floating point result comparisons
-} window_t;
-//---------------------------------------------------------
+int32_t hb_cam_stop_all(void);
+
 /**
- * Common parameters
+ * hb_cam_reset : reset cam, include cmos, mipi, cim/cimdma.
+ * @port: camera port, which cam you want to choose;
  */
-typedef struct {
-    frame_format_t format;  // frame format
-    resolution_t in;        // input frame resolution
-    resolution_t out;       // output frame resolution
-    int32_t x_offset;       // center offset for input x coordinate
-    int32_t y_offset;       // center offset for input y coordinate
-    int32_t diameter;       // diameter of equivalent 180 field of view in pixels
-    double fov;             // field of view
-} param_t;
+int32_t hb_cam_reset(uint32_t port);
 
-typedef struct gdc_config {
-	uint32_t config_addr;	//gdc config address
-	uint32_t config_size;	//gdc config size in 32bit
-	uint32_t input_width;	//gdc input width resolution
-	uint32_t input_height;	//gdc input height resolution
-	uint32_t input_stride;	//gdc input stride (pixel)
-	uint32_t output_width;	//gdc output width resolution
-	uint32_t output_height;	//gdc output height resolution
-	uint32_t output_stride;	//gdc output stride (pixel)
-	uint8_t div_width;	//use in dividing UV dimensions; actually a shift right
-	uint8_t div_height;	//use in dividing UV dimensions; actually a shift right
-	uint32_t total_planes;
-	uint8_t sequential_mode;	//sequential processing
-} gdc_config_t;
+/**
+ * hb_cam_power_on : power on cmos.
+ * @port: cmos port, which cmos you want to choose;
+ */
+int32_t hb_cam_power_on(uint32_t port);
 
-int hb_vio_start(void);
-int hb_vio_stop(void);
-int hb_vio_get_info(uint32_t info_type, void *data);
-int hb_vio_set_info(uint32_t info_type, void *data);
-int hb_vio_free_info(uint32_t info_type, void *data);
-int hb_vio_get_info_conditional(uint32_t info_type, void *data, int time);
+/**
+ * hb_cam_power_off : power off cmos.
+ * @port: cmos port, which cmos you want to choose;
+ */
+int32_t hb_cam_power_off(uint32_t port);
 
-int hb_vio_pym_process(src_img_info_t *src_img_info);
-int hb_vio_src_free(src_img_info_t *src_img_info);
+/**
+ * hb_cam_get_fps : deinit cam, include cmos, mipi, cim/cimdma.
+ * @port: cam port, which cam you want to choose;
+ * @fps: output parameters, fps == what you set in config;
+ */
+int32_t hb_cam_get_fps(uint32_t port, uint32_t *fps);
+
+/**
+ * hb_cam_get_img : get cam img info(only support in xj2).
+ * @cam_img_info: output parameters, inlcude vaddr/paddr/w/h etc;
+ */
+int32_t hb_cam_get_img(cam_img_info_t *cam_img_info);
+
+/**
+ * hb_cam_free_img : free cam info(only support in xj2).
+ * @cam_img_info: output parameters, inlcude vaddr/paddr/w/h etc.
+ */
+int32_t hb_cam_free_img(cam_img_info_t *cam_img_info);
+
+/**
+ * hb_cam_clean_img : clean cam info(only support in xj2).
+ * @cam_img_info: output parameters, inlcude vaddr/paddr/w/h etc.
+ */
+int32_t hb_cam_clean_img(cam_img_info_t *cam_img_info);
+
+/**
+ * hb_cam_get_data : get cam data info.
+ * @port: cam port, which cam you want to choose;
+ * @data_type: data type, raw/yuv etc.
+ * @data: cam image(from cim/cimdma)
+ */
+int32_t hb_cam_get_data(uint32_t port, CAM_DATA_TYPE_E data_type, void* data);
+
+/**
+ * hb_cam_free_data : free cam data info.
+ * @port: cam port, which cam you want to choose;
+ * @data_type: data type, raw/yuv etc.
+ * @data: cam image(from cim/cimdma)
+ */
+int32_t hb_cam_free_data(uint32_t port, CAM_DATA_TYPE_E data_type, void* data);
+
+/**
+ * hb_cam_bypass_enable : deinit cam, include cmos, mipi, cim/cimdma.
+ * @cfg_index:
+ */
+int32_t hb_cam_bypass_enable(uint32_t port, int32_t enable);
+
+/**
+ * hb_cam_set_fps_ctrl : skip frame in cim/cimdma side dynamically.
+ * @port: cam port: which cam port you want to choose;
+ * @skip_frame: 1 enable; 0 disable;
+ * @in_fps: input fps
+ * @out_fps: output fps
+ */
+int32_t hb_cam_set_fps_ctrl(uint32_t port, uint32_t skip_frame, uint32_t in_fps, uint32_t out_fps);
+
+/**
+ * hb_cam_get_stat_info : get fs/fe timestamps of frame.
+ * @port: cam port: which cam port you want to choose;
+ * @statinfo: 5 frame frameid and timestamps from IP in pipeline
+ */
+int32_t hb_cam_get_stat_info(uint32_t port, struct vio_statinfo *statinfo);
+
+/**
+ * hb_cam_dynamic_switch_fps : switch coms setting.
+ * @port: cmos port, which cmos you want to choose;
+ * @fps: switch cmos fps setting;
+ */
+int32_t hb_cam_dynamic_switch_fps(uint32_t port, uint32_t fps);
+
+/**
+ * hb_cam_dynamic_switch_mode : switch coms setting.
+ * @port: cmos port, which cam you want to choose;
+ * @mode: switch cmos mode setting;
+ */
+int32_t hb_cam_dynamic_switch_mode(uint32_t port, uint32_t mode);
+
+/**
+ * hb_cam_dynamic_switch : switch coms setting.
+ * @port: cam port, which cam you want to choose;
+ * @fps: switch cmos fps setting;
+ * @resolution: switch cmos resolution setting;
+ */
+int32_t hb_cam_dynamic_switch(uint32_t port, uint32_t fps, uint32_t resolution);
+
+/**
+ * hb_cam_set_mclk : set sensor mclk(only xj3 support).
+ * @entry_num: which mipi host you choose;
+ * @mclk:  main clk;
+ */
+int32_t hb_cam_set_mclk(uint32_t entry_num, uint32_t mclk);
+
+/**
+ * hb_cam_enable_mclk : enable sensor mclk(only xj3 support).
+ * @entry_num: which mipi host you choose;;
+ */
+int32_t hb_cam_enable_mclk(uint32_t entry_num);
+
+/**
+ * hb_cam_disable_mclk : disable sensor mclk(only xj3 support).
+ * @entry_num: which mipi host you choose;;
+ */
+int32_t hb_cam_disable_mclk(uint32_t entry_num);
+
+/**
+ * hb_cam_extern_isp_reset :  reset independent external isp.
+ * @port: cam port, which cam you want to choose;
+ */
+int32_t hb_cam_extern_isp_reset(uint32_t port);
+
+/**
+ * hb_cam_extern_isp_poweroff : poweroff independent external isp.
+ * @port: cam port, which cam you want to choose;
+ */
+int32_t hb_cam_extern_isp_poweroff(uint32_t port);
+
+/**
+ * hb_cam_extern_isp_poweron : poweron independent external isp.
+ * @port: cam port, which cam you want to choose;
+ */
+int32_t hb_cam_extern_isp_poweron(uint32_t port);
+
+
+/********************************* for i2c/spi rw *********************************/
+/**
+ * hb_cam_i2c_read : for i2c read.
+ * @port: cam port, which cam you want to choose;
+ * @reg_addr: which addr you want to read;
+ */
+int32_t hb_cam_i2c_read(uint32_t port, uint32_t reg_addr);
+
+/**
+ * hb_cam_i2c_read_byte : for i2c read.
+ * @port: cam port, which cam you want to choose;
+ * @reg_addr: which addr you want to read;
+ */
+int32_t hb_cam_i2c_read_byte(uint32_t port, uint32_t reg_addr);
+
+/**
+ * hb_cam_i2c_write : for i2c write.
+ * @port: cam port, which cam you want to choose;
+ * @reg_addr: which addr you want to read;
+ * @value: what you write to addr;
+ */
+int32_t hb_cam_i2c_write(uint32_t port, uint32_t reg_addr, uint16_t value);
+
+/**
+ * hb_cam_i2c_write_byte : for i2c write.
+ * @port: cam port, which cam you want to choose;
+ * @reg_addr: which addr you want to read;
+ * @value: what you write to addr;
+ */
+int32_t hb_cam_i2c_write_byte(uint32_t port, uint32_t reg_addr, uint8_t value);
+
+/**
+ * hb_cam_i2c_block_write : for i2c write.
+ * @port: cam port, which cam you want to choose;
+ * @subdev: sub device;
+ * @reg_addr: your block's first addr;
+ * @buffer: save what you write;
+ * @size: block size;
+ */
+int32_t hb_cam_i2c_block_write(uint32_t port, uint32_t subdev,
+                                       uint32_t reg_addr, char *buffer, uint32_t size);
+
+/**
+ * hb_cam_i2c_block_read : for i2c read.
+ * @port: cam port, which cam you want to choose;
+ * @subdev: sub device;
+ * @reg_addr: your block's first addr;
+ * @buffer: save what you read;
+ * @size: block size;
+ */
+int32_t hb_cam_i2c_block_read(uint32_t port, uint32_t subdev,
+                                      uint32_t reg_addr, char *buffer, uint32_t size);
+
+/**
+ * hb_cam_spi_block_write : for spi write.
+ * @port: cam port, which cam you want to choose;
+ * @subdev: sub device;
+ * @reg_addr: your block's first addr;
+ * @buffer: save what you write;
+ * @size: block size;
+ */
+int32_t hb_cam_spi_block_write(uint32_t port, uint32_t subdev,
+                                        uint32_t reg_addr, char *buffer, uint32_t size);
+
+/**
+ * hb_cam_spi_block_read : for spi read.
+ * @port: cam port, which cam you want to choose;
+ * @subdev: sub device;
+ * @reg_addr: your block's first addr;
+ * @buffer: save what you read;
+ * @size: block size;
+ */
+int32_t hb_cam_spi_block_read(uint32_t port, uint32_t subdev,
+                                       uint32_t reg_addr, char *buffer, uint32_t size);
+
+/**
+ * hb_cam_ipi_reset : enable/disable ipi.
+ * @entry_num: mipi host num;
+ * @ipi_index: mipi host ipi index;
+ * @enable: enable/disable;
+ */
+int32_t hb_cam_ipi_reset(uint32_t entry_num, uint32_t ipi_index, uint32_t enable);
+
+/**
+ * hb_vio_init :  get information about sensor
+ * param[in] dev_port:   cam port, which cam you want to choose;
+ * param[out] sp:        information about sensor or eeprom
+ * param[in] type:       0: read sensor parameters
+ *                       1: read eeprom parameters
+ *                       3: read parameters form sensor and eeprom
+ */
+int32_t hb_cam_get_sns_info(uint32_t dev_port, cam_parameter_t *sp, uint8_t type);
+
+/************************************ VPM API ************************************/
+/**
+ * hb_vio_init : for vio init, include pym/isp/gdc.
+ * @cfg_file: vio init config setting;
+ */
+int32_t hb_vio_init(const char *cfg_file);
+
+/**
+ * hb_vio_deinit : for vio deinit, include pym/isp/gdc.
+ */
+int32_t hb_vio_deinit(void);
+
+/**
+ * hb_vio_start_pipeline : choose a vio pipeline start, include pym/isp/gdc.
+ * @pipeline_id: which vio pipeline you want to start;
+ */
+int32_t hb_vio_start_pipeline(uint32_t pipeline_id);
+
+/**
+ * hb_vio_stop_pipeline : choose a vio pipeline stop, include pym/isp/gdc.
+ * @pipeline_id: which vio pipeline you want to stop;
+ */
+int32_t hb_vio_stop_pipeline(uint32_t pipeline_id);
+
+/**
+ * hb_vio_set_callbacks : have been removed, not suport now;
+ */
+int32_t hb_vio_set_callbacks(uint32_t pipeline_id, VIO_CALLBACK_TYPE_E type, data_cb cb);
+
+/**
+ * hb_vio_set_param : set vio paramters.
+ * @pipeline_id: which vio pipeline you want to set;
+ * @info_type: which type you want to set;
+ * @info: what you want to set;
+ */
+int32_t hb_vio_set_param(uint32_t pipeline_id, VIO_INFO_TYPE_E info_type, void *info);
+
+/**
+ * hb_vio_get_param : get vio paramters.
+ * @pipeline_id: which vio pipeline you want to set;
+ * @info_type: which type you want to set;
+ * @info: what you want to get;
+ */
+int32_t hb_vio_get_param(uint32_t pipeline_id, VIO_INFO_TYPE_E info_type, void *info);
+
+/**
+ * hb_vio_get_data : get vio info, such as pym/isp/gdc etc.
+ * @pipeline_id: which vio pipeline info you want get;
+ * @data_type: which type info you want to get;
+ * @data: what you want to get;
+ */
+int32_t hb_vio_get_data(uint32_t pipeline_id, VIO_DATA_TYPE_E data_type, void *data);
+
+/**
+ * hb_vio_get_data_conditional : get vio info, such as pym/isp/gdc etc.
+ * @pipeline_id: which vio pipeline info you want get;
+ * @data_type: which type info you want to get;
+ * @data: what you want to get;
+ * @times: set whether the fetch data frame is a previous frame or a subsequent frame;
+ */
+int32_t hb_vio_get_data_conditional(uint32_t pipeline_id, VIO_DATA_TYPE_E data_type,
+                                               void *data, int32_t times);
+
+/**
+ * hb_vio_run_pym : set src addr and enable pym.
+  * @pipeline_id: which vio pipeline info you want run;
+  * @src_img_info: src img info;
+ */
+int32_t hb_vio_run_pym(uint32_t pipeline_id, hb_vio_buffer_t * src_img_info);
+
+#ifdef HB_VIO_IPU_EN
+/**
+ * hb_vio_free_ipubuf : free ipu info(only support in xj23).
+ * @pipeline_id: which vio pipeline info you want free;
+ * @dst_img_info: free ipu info;
+ */
+int32_t hb_vio_free_ipubuf(uint32_t pipeline_id, hb_vio_buffer_t * dst_img_info); //remove
 #endif
 
-typedef void (*data_cb) (uint32_t pipe_id, uint32_t event, void *data,
-			 void *userdata);
+/**
+ * hb_vio_free_ispbuf : free isp info.
+ * @pipeline_id: which vio pipeline info you want free;
+ * @dst_img_info: free isp info;
+ */
+int32_t hb_vio_free_ispbuf(uint32_t pipeline_id, hb_vio_buffer_t * dst_img_info);
 
-int hb_vio_init(const char *cfg_file);
-int hb_vio_deinit();
-int hb_vio_start_pipeline(uint32_t pipeline_id);
-int hb_vio_stop_pipeline(uint32_t pipeline_id);
+/**
+ * hb_vio_free_pymbuf : free pym info.
+ * @pipeline_id: which vio pipeline info you want free;
+ * @data_type: which type you want to free;
+ * @img_info: what you want to free;
+ */
+int32_t hb_vio_free_pymbuf(uint32_t pipeline_id, VIO_DATA_TYPE_E data_type, void *img_info);
 
-// pipeline means software workflow instance,
-// one sensor maps one software instance
-int hb_vio_set_callbacks(uint32_t pipeline_id, VIO_CALLBACK_TYPE_E type,
-			 data_cb cb);
+/************************* for gdc api *************************/
+/**
+ * hb_vio_gen_gdc_cfg : get gdc config bin.
+ * @gdc_parm: gdc cfg bin config;
+ * @wnds: windows size;
+ * @wnd_num: windows nums;
+ * @cfg_buf: gdc config bin buff;
+ * @cfg_size: gdc config bin buff size;
+ */
+int32_t hb_vio_gen_gdc_cfg(param_t *gdc_parm, window_t *wnds,
+                                  uint32_t wnd_num, void **cfg_buf, uint64_t *cfg_size);
 
-int hb_vio_set_param(uint32_t pipeline_id, VIO_INFO_TYPE_E info_type,
-		     void *info);
-int hb_vio_get_param(uint32_t pipeline_id, VIO_INFO_TYPE_E info_type,
-		     void *info);
+/**
+ * hb_vio_set_gdc_cfg : set gdc cfg.
+ * @pipeline_id: which vio pipeline info you want set;
+ * @cfg_buf: gdc config bin buff;
+ * @cfg_size: gdc config bin size;
+ */
+int32_t hb_vio_set_gdc_cfg(uint32_t pipeline_id, uint32_t* cfg_buf,
+                                  uint64_t cfg_size);
 
-int hb_vio_get_data(uint32_t pipeline_id, VIO_DATA_TYPE_E data_type,
-		    void *data);
-int hb_vio_get_data_conditional(uint32_t pipeline_id, VIO_DATA_TYPE_E data_type,
-				void *data, int time);
+/**
+ * hb_vio_set_gdc_cfg_opt : switch gdc and set gdc cfg.
+ * @pipeline_id: which vio pipeline info you want set;
+ * @gdc_id: switch gdc hw id;
+ * @cfg_buf: gdc config bin buff;
+ * @cfg_size: gdc config bin size;
+ */
+int32_t hb_vio_set_gdc_cfg_opt(uint32_t pipeline_id, uint32_t gdc_id,
+                                       uint32_t* cfg_buf, uint64_t cfg_size); //comp xj3
 
+/**
+ * hb_vio_free_gdc_cfg : free gdc config bin.
+ * @cfg_buf: gdc config bin buff;
+ */
 void hb_vio_free_gdc_cfg(uint32_t* cfg_buf);
-int   hb_vio_gen_gdc_cfg(param_t *gdc_parm, window_t *wnds,
-				uint32_t wnd_num, void **cfg_buf, uint64_t *cfg_size);
-int   hb_vio_set_gdc_cfg(uint32_t pipeline_id, uint32_t* cfg_buf,
-								uint64_t cfg_size);
-
-int   hb_vio_set_gdc_cfg_opt(uint32_t pipeline_id, uint32_t gdc_id,
-							uint32_t* cfg_buf, uint64_t cfg_size);
-int hb_vio_run_gdc_opt(uint32_t pipeline_id,
-					   uint32_t gdc_id,
-					   hb_vio_buffer_t * src_img_info,
-					   hb_vio_buffer_t * dst_img_info,
-					   int rotate);
 
 /**
- * check gdc id is valid ,if so, process gdc node and use user gdc configure
- * @param[in] pipeline_id      pipeline id, represent which pipeline
- * @param[in] gdc_id           gdc id,represent which gdc channel
- * @param[in] gdc_cfg          pointer to gdc user configure
- * @param[in] src_img_info     pointer to gdc source buffer information
- * @param[in] dst_img_info     pointer to gdc destination buffer information
- * @param[in] rotate           gdc buffer process rotation parameter
- * @return 0 if success
+ * hb_vio_run_gdc : run gdc.
+ * @pipeline_id: which vio pipeline info you want do process;
+ * @src_img_info: gdc source img info;
+ * @dst_img_info: gdc output info;
+ * @rotate: rotation;
  */
-int32_t hb_vio_run_gdc_adv(
-						uint32_t pipeline_id,
-						uint32_t gdc_id,
-						const gdc_config_t *gdc_cfg,
-						hb_vio_buffer_t *src_img_info,
-						hb_vio_buffer_t *dst_img_info,
-						int32_t rotate);
+int32_t hb_vio_run_gdc(uint32_t pipeline_id, hb_vio_buffer_t * src_img_info,
+                            hb_vio_buffer_t * dst_img_info, int32_t rotate);
 
 /**
- * check gdc id is valid ,if so, process gdc node and use user gdc configure
- * @param[in] pipeline_id      pipeline id, represent which pipeline
- * @param[in] gdc_id           gdc id,represent which gdc channel
- * @param[in] gdc_cfg          pointer to gdc user configure
- * @param[in] src_img_info     pointer to gdc source buffer information
- * @param[in] dst_img_info     pointer to gdc destination buffer information
- * @param[in] rotate           gdc buffer process rotation parameter
- * @return 0 if success
+ * hb_vio_run_gdc_opt : switch gdc and run gdc.
+ * @pipeline_id: which vio pipeline info you want do process;
+ * @gdc_id: switch gdc hw id;
+ * @src_img_info: gdc source img info;
+ * @dst_img_info: gdc output info;
+ * @rotate: rotation;
  */
-int32_t hb_vio_run_gdc_adv_user(
-						uint32_t pipeline_id,
-						uint32_t gdc_id,
-						const gdc_config_t *gdc_cfg,
-						hb_vio_buffer_t * src_img_info,
-						hb_vio_buffer_t * dst_img_info,
-						int32_t rotate);
+int32_t hb_vio_run_gdc_opt(uint32_t pipeline_id,
+                                  uint32_t gdc_id,
+                                  hb_vio_buffer_t * src_img_info,
+                                  hb_vio_buffer_t * dst_img_info,
+                                  int32_t rotate);//comp xj3
 
-
-/*ipu channel    osd
- *   us 0      ==> osd 0
- *   ds 0      ==> osd 1
- *   ds 1      ==> osd 2
- *   ds 2      ==> osd 3
- *   ds 3      ==> osd 4
- *   ds 4      ==> osd 5
+/**
+ * hb_vio_run_gdc_adv : switch gdc and set gdc bin and run gdc.
+ * @pipeline_id: which vio pipeline info you want do process;
+ * @gdc_id: switch gdc hw id;
+ * @gdc_cfg: gdc config bin;
+ * @src_img_info: gdc source img info;
+ * @dst_img_info: gdc output info;
+ * @rotate: rotation;
  */
-int hb_vio_init_osd_layer(uint32_t pipeline_id, uint32_t osd_layer,
-		osd_box_t osd_data[3]);
-int hb_vio_deinit_osd_layer(uint32_t pipeline_id, uint32_t osd_layer);
-int hb_vio_get_osd_addr(uint32_t pipeline_id, uint32_t osd_layer,
-			address_info_t(*osd_map_buf)[3]);
-int hb_vio_update_osd(uint32_t pipeline_id, uint32_t osd_layer, uint32_t enable,
-		      uint32_t colour_invert_enable);
-int hb_vio_set_osd_sta(uint32_t pipeline_id, uint32_t osd_layer,
-		       uint8_t osd_sta_level[3], osd_sta_box_t osd_sta[8]);
-int hb_vio_get_osd_sta(uint32_t pipeline_id, uint32_t osd_layer,
-		       uint16_t osd_sta_bin_value[8][4]);
-int hb_vio_osd_draw_word(osd_draw_word_t *osd_draw_word_data);
+int32_t hb_vio_run_gdc_adv(uint32_t pipeline_id,
+                                  uint32_t gdc_id,
+                                  const gdc_config_t *gdc_cfg,
+                                  hb_vio_buffer_t *src_img_info,
+                                  hb_vio_buffer_t *dst_img_info,
+                                  int32_t rotate);
+/**
+ * hb_vio_run_gdc_adv_user : switch gdc and set gdc bin and run gdc.
+ * @pipeline_id: which vio pipeline info you want do process;
+ * @gdc_id: switch gdc hw id;
+ * @gdc_cfg: gdc config bin;
+ * @src_img_info: gdc source img info;
+ * @dst_img_info: gdc output info;
+ * @rotate: rotation;
+ */
+int32_t hb_vio_run_gdc_adv_user(uint32_t pipeline_id,
+								uint32_t gdc_id,
+								const gdc_config_t *gdc_cfg,
+								const hb_vio_buffer_t * src_img_info,
+								hb_vio_buffer_t * dst_img_info,
+								int32_t rotate);
 
-int hb_vio_free_ipubuf(uint32_t pipeline_id, hb_vio_buffer_t * dst_img_info);
-int hb_vio_free_gdcbuf(uint32_t pipeline_id, hb_vio_buffer_t * dst_img_info);
-int hb_vio_free_sifbuf(uint32_t pipeline_id, hb_vio_buffer_t *dst_img_info);
-int hb_vio_free_ispbuf(uint32_t pipeline_id, hb_vio_buffer_t *dst_img_info);
+/**
+ * hb_vio_free_gdcbuf : free gdc buff.
+ * @pipeline_id: which vio pipeline info you want do free;
+ * @dst_img_info: gdc output info;
+ */
+int32_t hb_vio_free_gdcbuf(uint32_t pipeline_id, hb_vio_buffer_t * dst_img_info);
 
-int hb_vio_free_pymbuf(uint32_t pipeline_id, VIO_DATA_TYPE_E data_type,
-		    void *img_info);
-int hb_vio_run_pym(uint32_t pipeline_id, hb_vio_buffer_t * src_img_info);
-int hb_vio_run_gdc(uint32_t pipeline_id, hb_vio_buffer_t * src_img_info,
-		       hb_vio_buffer_t * dst_img_info, int rotate);
-int hb_vio_free_ipubuf_all(uint32_t pipeline_id, ipu_all_chn_t *ipu_all_chn);
+/*********** for debug, may remove ***********/
+#ifdef HB_VIO_ISP_DUMP_EN
+/**
+ * hb_vio_raw_dump : dump raw data(only xj3 support).
+ * @pipeline_id: which vio pipeline info you want do dump;
+ * @raw_img: dump raw img;
+ * @yuv: dump yuv img;
+ */
+int32_t hb_vio_raw_dump(uint32_t pipeline_id, hb_vio_buffer_t * raw_img,
+                              hb_vio_buffer_t * yuv);
 
-void vio_dis_crop_set(uint32_t pipe_id, uint32_t info, void *data,
-							 void *userdata);
-int hb_vio_send_isp_in_order(uint32_t pipeline_id, uint8_t *order,
-		int *timeout);
+/**
+ * hb_vio_raw_feedback : sif feed back raw to isp(only xj3 support).
+ * @pipeline_id: which vio pipeline info you want do feedback;
+ * @feedback_src: feedback src;
+ * @isp_dst_yuv: output yuv;
+ */
+int32_t hb_vio_raw_feedback(uint32_t pipeline_id, hb_vio_buffer_t * feedback_src,
+                                    hb_vio_buffer_t * isp_dst_yuv);
+#endif
 
-int hb_vio_run_raw(uint32_t pipeline_id,
-			hb_vio_buffer_t * feedback_src, int timeout);
+/**
+ * hb_vio_run_raw : run isp process raw data.
+ * @pipeline_id: which vio pipeline info you want run;
+ * @feedback_src: feedback src;
+ * @timeout: process timeout;
+ */
+int32_t hb_vio_run_raw(uint32_t pipeline_id, hb_vio_buffer_t * feedback_src, int32_t timeout);
 
-
-// for debug
-int hb_vio_raw_dump(uint32_t pipeline_id, hb_vio_buffer_t * raw_img,
-		hb_vio_buffer_t * yuv);
-int hb_vio_raw_feedback(uint32_t pipeline_id, hb_vio_buffer_t * feedback_src,
-						hb_vio_buffer_t * isp_dst_yuv);
-
-int hb_vio_motion_detect(uint32_t pipeline_id);
-int hb_vio_enable_md(uint32_t pipeline_id);
-int hb_vio_disable_md(uint32_t pipeline_id);
-int hb_vio_sif_fps_ctrl(uint32_t pipe, uint32_t skip_frame, uint32_t in_fps,
-										uint32_t out_fps, uint32_t dump_raw);
-
-int hb_vio_wait_init(uint32_t pipeline_id, int time);
-int hb_vio_dump_frame_state(uint32_t pipe);
-
-int hb_vio_ipi_reset(uint32_t pipeline_id);
-int hb_vio_mipi_hw_cfg_reset(uint32_t pipeline_id);
-
-int hb_vio_switch_pipe(uint32_t pipemask, uint32_t enable);
+/**
+ * hb_vio_cfg_check : check vin & vpm cfg.
+ * @vpm_file: vio init config setting;
+ * @vin_file: config file path, include cmos/mipi/cim/cimdma configs;
+ * @cfg_index: config index, which cam you want to choose;
+ */
+int32_t hb_vio_cfg_check(const char* vpm_file, const char* vin_file, uint32_t cfg_index);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //HB_X2A_VIO_HB_VIO_INTERFACE_H
+#endif // HB_VIO_INTERFACE_H__
