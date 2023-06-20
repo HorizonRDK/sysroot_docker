@@ -1,6 +1,6 @@
 # Changelog for sysroot_docker
 
-tros_2.0.1 (2023-06-07)
+tros_2.1.0 (2023-06-20)
 ------------------
 1. 升级X3的easydnn版本为1.6.1，以及依赖的dnn版本为1.18.4，hlog版本为1.6.1。
 
