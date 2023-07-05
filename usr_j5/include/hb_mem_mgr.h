@@ -120,6 +120,8 @@ typedef enum mem_usage_t {
 	HB_MEM_USAGE_HW_JPEG_CODEC           = 0x00020000LL,
 	/* buffer will be used as vdsp buffer */
 	HB_MEM_USAGE_HW_VDSP                 = 0x00040000LL,
+	/* buffer will be used as geometric distortion correction out buffer */
+	HB_MEM_USAGE_HW_GDC_OUT              = 0x00080000LL,
 	/* mask for the hw flag */
 	HB_MEM_USAGE_HW_MASK                 = 0x00FFFF00LL,
 
