@@ -16,7 +16,7 @@ extern "C" {
 #endif  // __cplusplus
 
 #define HB_DNN_VERSION_MAJOR 1U
-#define HB_DNN_VERSION_MINOR 12U
+#define HB_DNN_VERSION_MINOR 19U
 #define HB_DNN_VERSION_PATCH 3U
 
 #define HB_DNN_TENSOR_MAX_DIMENSIONS 8
@@ -26,11 +26,10 @@ extern "C" {
     (param)->bpuCoreId = HB_BPU_CORE_ANY;         \
     (param)->dspCoreId = HB_DSP_CORE_ANY;         \
     (param)->priority = HB_DNN_PRIORITY_LOWEST;   \
+    (param)->more = false;                        \
+    (param)->customId = 0;                        \
     (param)->reserved1 = 0;                       \
     (param)->reserved2 = 0;                       \
-    (param)->reserved3 = 0;                       \
-    (param)->reserved4 = 0;                       \
-    (param)->more = false;                        \
   }
 
 typedef void *hbPackedDNNHandle_t;
@@ -108,7 +107,9 @@ typedef struct {
   hbDNNQuantiShift shift;
   hbDNNQuantiScale scale;
   hbDNNQuantiType quantiType;
+  int32_t quantizeAxis;
   int32_t alignedByteSize;
+  int32_t stride[HB_DNN_TENSOR_MAX_DIMENSIONS];
 } hbDNNTensorProperties;
 
 typedef struct {
@@ -134,11 +135,13 @@ typedef struct {
   int32_t dspCoreId;
   int32_t priority;
   int32_t more;
+  int64_t customId;
   int32_t reserved1;
   int32_t reserved2;
-  int32_t reserved3;
-  int32_t reserved4;
 } hbDNNInferCtrlParam;
+
+typedef void (*hbDNNTaskDoneCb)(hbDNNTaskHandle_t taskHandle, int32_t status,
+                                void *userdata);
 
 /**
  * Get DNN version
@@ -289,6 +292,16 @@ int32_t hbDNNRoiInfer(hbDNNTaskHandle_t *taskHandle, hbDNNTensor **output,
                       hbDNNTensor const *input, hbDNNRoi *rois,
                       int32_t roiCount, hbDNNHandle_t dnnHandle,
                       hbDNNInferCtrlParam *inferCtrlParam);
+
+/**
+ * DNN set task done callback
+ * @param[in] taskHandle: pointer to the task
+ * @param[in] cb: callback function
+ * @param[in] userdata: userdata 
+ * @return 0 if success, return defined error code otherwise
+*/
+int32_t hbDNNSetTaskDoneCb(hbDNNTaskHandle_t taskHandle, hbDNNTaskDoneCb cb,
+                           void *userdata);
 
 /**
  * Wait util task completed or timeout.

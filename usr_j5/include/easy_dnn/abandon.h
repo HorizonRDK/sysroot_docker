@@ -1,10 +1,15 @@
-// Copyright (c) 2021 Horizon Robotics.All Rights Reserved.
+// Copyright (c) [2021-2023] [Horizon Robotics].
 //
-// The material in this file is confidential and contains trade secrets
-// of Horizon Robotics Inc. This is proprietary information owned by
-// Horizon Robotics Inc. No part of this work may be disclosed,
-// reproduced, copied, transmitted, or used in any way for any purpose,
-// without the express written permission of Horizon Robotics Inc.
+// You can use this software according to the terms and conditions of
+// the Apache v2.0.
+// You may obtain a copy of Apache v2.0. at:
+//
+//     http: //www.apache.org/licenses/LICENSE-2.0
+//
+// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+// See Apache v2.0 for more details.
 
 #ifndef _EASY_DNN_ABANDON_H_
 #define _EASY_DNN_ABANDON_H_
@@ -73,7 +78,7 @@ class SingleBranchOutputParser : public SingleBranchOutputBaseParser {
       std::vector<std::shared_ptr<InputDescription>>& input_descriptions,
       std::shared_ptr<OutputDescription>& output_description,
       std::shared_ptr<DNNTensor>& output_tensor) final {
-    std::shared_ptr<ResultType> result = nullptr;
+    std::shared_ptr<ResultType> result{nullptr};
     if (!output) {
       result = std::make_shared<ResultType>();
       output = result;
@@ -128,7 +133,7 @@ class MultiBranchOutputParser : public MultiBranchOutputBaseParser {
       std::vector<std::shared_ptr<OutputDescription>>& depend_output_descs,
       std::vector<std::shared_ptr<DNNTensor>>& depend_output_tensors,
       std::vector<std::shared_ptr<DNNResult>>& depend_outputs) final {
-    std::shared_ptr<ResultType> result = nullptr;
+    std::shared_ptr<ResultType> result{nullptr};
     if (!output) {
       result = std::make_shared<ResultType>();
       output = result;

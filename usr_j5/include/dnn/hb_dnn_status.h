@@ -9,6 +9,8 @@
 #ifndef DNN_HB_DNN_STATUS_H_
 #define DNN_HB_DNN_STATUS_H_
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -29,8 +31,16 @@ typedef enum {
   HB_DNN_RUN_TASK_FAILED = -6000012,
   HB_DNN_MODEL_IS_RUNNING = -6000013,
   HB_DNN_INCOMPATIBLE_MODEL = -6000014,
-  HB_DNN_API_USE_ERROR = -6000015
+  HB_DNN_API_USE_ERROR = -6000015,
+  HB_DNN_MULTI_PROGRESS_USE_ERROR = -6000016
 } hbDNNStatus;
+
+/**
+ * Get DNN error code description
+ * @param[in] errorCode, dnn error code
+ * @return DNN error code description in nature language
+ */
+char const *hbDNNGetErrorDesc(int32_t errorCode);
 
 #ifdef __cplusplus
 }

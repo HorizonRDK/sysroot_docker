@@ -39,6 +39,13 @@ typedef enum {
   HB_DNN_OUTPUT_OPERATOR_TYPE_AUX_DPP_STABLE_SORT = 6,
   HB_DNN_OUTPUT_OPERATOR_TYPE_CHANNEL_ARGMAX_SPLIT = 7,
   HB_DNN_OUTPUT_OPERATOR_TYPE_FILTER = 8,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_CONV3D = 9,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_MAGIC = 10,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_RLE = 11,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_MODEL_INPUT_SCATTER = 12,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_MODEL_INPUT_GATHER = 13,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_MODEL_INPUT_GATHER_ELEMENTS = 14,
+  HB_DNN_OUTPUT_OPERATOR_TYPE_MODEL_INPUT_TOP_K = 15
 } hbDNNOutputOperatorType;
 
 typedef enum {
@@ -254,6 +261,34 @@ int32_t hbDNNConvertLayoutToNative1111(void *output, const void *input,
 /**
  * Add padding to data
  * @param output data with padding will be written to this address
+ * @param input source data without padding
+ * @param dimNum the dimension num of data
+ * @param dim real dimension of input, uint32 array
+ * @param stride the stride of output, int32 array, stride's uint is Byte
+ * @param elementSize data element size
+ * @return 0 if success, return defined error code otherwise
+ */
+int32_t hbDNNAddPaddingWithStride(void *output, void const *input,
+                                  uint32_t dimNum, const uint32_t *dim,
+                                  const int32_t *stride, uint32_t elementSize);
+/**
+ * Remove padding from data
+ * @param output data without padding will be written to this address
+ * @param input source data with padding
+ * @param dimNum the dimension num of data
+ * @param dim real dimension of output, uint32 array
+ * @param stride the stride of input, int32 array, stride's uint is Byte
+ * @param elementSize data element size
+ * @return 0 if success, return defined error code otherwise
+ */
+int32_t hbDNNRemovePaddingWithStride(void *output, void const *input,
+                                     uint32_t dimNum, const uint32_t *dim,
+                                     const int32_t *stride,
+                                     uint32_t elementSize);
+
+/**
+ * Add padding to data
+ * @param output data with padding will be written to this address
  * @param outputShape shape of data with padding.  should be 4-element uint32 array
  * @param input source data without padding
  * @param inputShape shape of data without padding.  should be 4-element uint32 array
@@ -261,7 +296,7 @@ int32_t hbDNNConvertLayoutToNative1111(void *output, const void *input,
  * @return 0 if success, return defined error code otherwise
  */
 int32_t hbDNNAddPadding(void *output, hbDNNTensorShape outputShape,
-                        const void *input, hbDNNTensorShape inputShape,
+                        void const *input, hbDNNTensorShape inputShape,
                         int32_t dataType);
 
 /**
@@ -274,7 +309,7 @@ int32_t hbDNNAddPadding(void *output, hbDNNTensorShape outputShape,
  * @return 0 if success, return defined error code otherwise
  */
 int32_t hbDNNRemovePadding(void *output, hbDNNTensorShape outputShape,
-                           const void *input, hbDNNTensorShape inputShape,
+                           void const *input, hbDNNTensorShape inputShape,
                            int32_t dataType);
 
 /**
