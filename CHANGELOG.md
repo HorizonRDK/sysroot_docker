@@ -1,5 +1,9 @@
 # Changelog for sysroot_docker
 
+tros_2.2.0 (2023-07-07)
+------------------
+1. 更新J5 hbmedia等系统依赖，其中easydnn版本号1.6.1，dnn版本号1.19.3（和v1.1.57_release版本OE对齐），hlog版本号1.6.1。
+
 tros_2.1.0 (2023-06-20)
 ------------------
 1. 升级X3的easydnn版本为1.6.1，以及依赖的dnn版本为1.18.4，hlog版本为1.6.1。
