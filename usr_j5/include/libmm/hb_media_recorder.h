@@ -3,8 +3,8 @@
  *            Copyright 2019 Horizon Robotics, Inc.
  *                   All rights reserved.
  *************************************************************************/
-#ifndef HB_MEDIA_RECORDER_H
-#define HB_MEDIA_RECORDER_H
+#ifndef __HB_MEDIA_RECORDER_H__
+#define __HB_MEDIA_RECORDER_H__
 
 #include "hb_media_codec.h"
 #include "hb_media_muxer.h"
@@ -511,4 +511,4 @@ extern hb_s32 hb_mm_mr_get_state(media_recorder_context_t *context,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* HB_MEDIA_RECORDER_H */
+#endif /* __HB_MEDIA_RECORDER_H__ */
