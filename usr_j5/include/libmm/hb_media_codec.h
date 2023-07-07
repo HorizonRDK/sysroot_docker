@@ -3,8 +3,8 @@
  *            Copyright 2019 Horizon Robotics, Inc.
  *                   All rights reserved.
  *************************************************************************/
-#ifndef HB_MEDIA_CODEC_H
-#define HB_MEDIA_CODEC_H
+#ifndef __HB_MEDIA_CODEC_H__
+#define __HB_MEDIA_CODEC_H__
 
 #include "hb_media_basic_types.h"
 
@@ -51,17 +51,17 @@ extern "C" {
 /**
 * Define the CTU number for max resolution = 8192x8192/(64x64).
 **/
-#define MC_VIDEO_MAX_CTU_NUM               0x4000U
+#define MC_VIDEO_MAX_CTU_NUM               0x4000
 
 /**
 * Define the SubCTU number for max resolution = 8192x8192/(32x32).
 **/
-#define MC_VIDEO_MAX_SUB_CTU_NUM	        0x10000U
+#define MC_VIDEO_MAX_SUB_CTU_NUM	        0x10000
 
 /**
 * Define the MB number for max resolution = 8192x8192/(16x16).
 **/
-#define MC_VIDEO_MAX_MB_NUM                0x40000U
+#define MC_VIDEO_MAX_MB_NUM                0x40000
 
 /**
 * Define the maximum GOP size.
@@ -332,9 +332,9 @@ typedef enum _mc_audio_sample_rate {
 * dual-mono.
 *
 */
-#define MC_AV_CH_FRONT_LEFT             0x00000001U
-#define MC_AV_CH_FRONT_RIGHT            0x00000002U
-#define MC_AV_CH_FRONT_CENTER           0x00000004U
+#define MC_AV_CH_FRONT_LEFT             0x00000001
+#define MC_AV_CH_FRONT_RIGHT            0x00000002
+#define MC_AV_CH_FRONT_CENTER           0x00000004
 
 /**
 * Define the audio channel layout.
@@ -658,7 +658,7 @@ typedef struct _mc_h264_cbr_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -870,7 +870,7 @@ typedef struct _mc_h264_vbr_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -933,14 +933,14 @@ typedef struct mc_h264_avbr_params_t {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
 /**
  * Specifies the initial QP by user. If this value is smaller than 0 or 
  * larger than 51, the initial QP is decided by F/W.
- * Values[0~63]
+ * Values[0~51]
  *
  * - Note: It's unchangable RC parameter in the same sequence.
  * - Encoding: Support.
@@ -1135,7 +1135,7 @@ typedef struct _mc_h264_fix_qp_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1196,7 +1196,7 @@ typedef struct _mc_h264_qp_map_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1271,14 +1271,14 @@ typedef struct _mc_h265_cbr_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
 /**
  * Specifies the initial QP by user. If this value is smaller than 0 or 
  * larger than 51, the initial QP is decided by F/W.
- * Values[0~63]
+ * Values[0~51]
  *
  * - Note: It's unchangable RC parameter in the same sequence.
  * - Encoding: Support.
@@ -1484,7 +1484,7 @@ typedef struct _mc_h265_vbr_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1547,7 +1547,7 @@ typedef struct _mc_h265_avbr_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1749,7 +1749,7 @@ typedef struct _mc_h265_fix_qp_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1810,7 +1810,7 @@ typedef struct _mc_h265_qp_map_params {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1851,7 +1851,7 @@ typedef struct _mc_mjpeg_fix_qp_params {
  * - Note: 
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 30
+ * - Default: 0
  */
 	hb_u32 frame_rate;
 
@@ -1992,7 +1992,7 @@ typedef struct _mc_video_custom_gop_pic_params {
  * The valid numbers are as follows.
  *     0 : I picture
  *     1 : P picture
- *     2 : B picture, It's only for XJ3.
+ *     2 : B picture
  *
  * - Note: It's unchangable parameter.
  * - Encoding: Support.
@@ -2027,8 +2027,7 @@ typedef struct _mc_video_custom_gop_pic_params {
  * The number of reference L0 of Nth picture in the custom GOP.
  * Flag to use multi reference picture for P picture.
  * It is valid only if PIC_TYPE is P.
- * Values[0,1] for XJ3
- * Values[0] for J5
+ * Values[0,1]
  *
  * - Note: It's unchangable parameter. 
  * - Encoding: Support.
@@ -2651,8 +2650,7 @@ typedef struct _mc_video_codec_enc_params {
 
 /**
  * The number of input FrameBuffer.
- * Values[1,65536] for MJPEG/JPEG
- * Values[1,31] for H264/H265
+ * Values[1,65536]
  *
  * - Note: It's unchangable parameters in the same sequence.
  * - Encoding: Support.
@@ -2881,7 +2879,7 @@ typedef struct _mc_h265_dec_config {
  *     0x01: skip non-IRAP.
  *     0x02: skip non-reference picture.
  *     0x03: thumbnail mode. It skips non-IRAP pictures w/o registering 
- *           reference DPB. It's only for XJ3.
+ *           reference DPB.
  *
  * - Note: It's unchangable parameters in the same sequence.
  * - Encoding: Unsupport.
@@ -2932,7 +2930,6 @@ typedef struct _mc_h265_dec_config {
  *         SPS_MAX_SUB_LAYER is signalled from bitstream.
  *         When use of relative value decoder can keep the skip ratio
  *         regardless the cange of SPS_MAX_SUB_LAYER in the bitstream.
- *         It's only for XJ3.
  *
  * - Note: It's unchangable parameters in the same sequence.
  * - Encoding: Unsupport.
@@ -3106,9 +3103,8 @@ typedef struct _mc_video_codec_dec_params {
 
 /**
  * Specify the count of bitstream buffers.
- * Values[1,65536] for XJ3
- * Values[2,65536] for J5
- *
+ * Values[1,65536]
+  *
  * - Note: It's unchangable parameters in the same sequence.
  * - Encoding: Unsupport.
  * - Decoding: Support.
@@ -4194,15 +4190,6 @@ typedef struct _mc_mjpeg_jpeg_output_frame_info {
  * - Default: 0;
  */
 	hb_bool extended_sequential;
-/**
- * This variable increases by 1 whenever sequence changes.
- *
- * - Note:
- * - Encoding: Unsupport.
- * - Decoding: Support.
- * - Default:
- */
-	hb_u32 sequence_no;
 } mc_mjpeg_jpeg_output_frame_info_t;
 
 /**
@@ -5068,7 +5055,7 @@ typedef struct _media_codec_callback {
  * @param[in]       user data
  * @param[out]      vlc buffer size
  *
- * - Note: It's only useful for xj3.
+ * - Note: It's only useful for encoding.
  * - Encoding: Support.
  * - Decoding: unsupport.
  * - Default: 0
@@ -5882,10 +5869,8 @@ typedef struct _mc_h265_slice_params {
  * The valid numbers are as follows.
  *     0: no multi-slice
  *     1: slice in CTU number
- *     2: slice in CTU number with interrupt. It's only for J5
  *
- * - Note: It's changable RDO parameters and the slice interrupt is
- *         unchangable.
+ * - Note: It's changable RDO parameters.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0.
@@ -5909,11 +5894,8 @@ typedef struct _mc_h265_slice_params {
  *     0: no multi-slice
  *     1 : slice in CTU number
  *     2 : slice in number of byte
- *     3 : slice in CTU number with interrupt. It's only for J5
- *     4 : slice in number of byte with interrupt. It's only for J5
  *
- * - Note: It's changable RDO parameters and the slice interrupt is
- *         unchangable.
+ * - Note: It's changable RDO parameters.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0.
@@ -5941,7 +5923,7 @@ typedef struct _mc_mjpeg_slice_params {
  * It specifies a slice height for slice encoding.
  * Values[0, picture height]
  *
- * - Note: It's unchangable parameters.
+ * - Note: It's changable parameters.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0.(no slice)
@@ -5966,7 +5948,6 @@ typedef struct _mc_video_slice_params {
 
 /**
 * Define the parameters of h264/h265 smart backgroud encoding.
-* It's only for XJ3.
 **/
 typedef struct _mc_video_smart_bg_enc_params {
 /**
@@ -6094,9 +6075,7 @@ typedef struct _mc_h265_pred_unit_params {
  *     0 : disable
  *     1 : enable
  * - Note: It's unchangable parameters in same sequence.
- *         Values[0,1] for XJ3
- *         Values[0] for J5
- *
+ *         It's only for XJ3.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0.
@@ -6214,10 +6193,10 @@ typedef struct _mc_h264_transform_params {
 typedef struct _mc_h265_transform_params {
 /**
  * The value of chroma(Cb) QP offset.
- * Values[-12~12] for XJ3
- * Values[0] for J5
- *
+ * Values[-12~12]
+ * 
  * - Note: It's changable parameter in the same sequence for XJ3.
+ *         It's only for XJ3.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0
@@ -6226,10 +6205,10 @@ typedef struct _mc_h265_transform_params {
 
 /**
  * The value of chroma(Cr) QP offset.
- * Values[-12~12] for XJ3
- * Values[0] for J5
+ * Values[-12~12]
  * 
  * - Note: It's changable parameter in the same sequence for XJ3.
+ *         It's only for XJ3.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0
@@ -6244,7 +6223,6 @@ typedef struct _mc_h265_transform_params {
  *     0 : disable user scaling list
  *     1 : enable using user defined scaling list
  * - Note: It's unchangable parameter in the same sequence.
- *         When user enable this, the J5 uses the default scaling list.
  * - Encoding: Support.
  * - Decoding: Unsupport.
  * - Default: 0
@@ -6378,10 +6356,8 @@ typedef struct _mc_video_roi_params {
  * Specify the ROI map number.
  * Values[1, MC_VIDEO_MAX_MB_NUM] for h264,
  * and the size should be (ALIGN16(picWidth)>>4)*(ALIGN16(picHeight)>>4)
- * Values[1, MC_VIDEO_MAX_SUB_CTU_NUM] for XJ3 h265
+ * Values[1, MC_VIDEO_MAX_SUB_CTU_NUM] for h265
  * and the size should be (ALIGN64(picWidth)>>5)*(ALIGN64(picHeight)>>5)
- * Values[1, MC_VIDEO_MAX_CTU_NUM] for J5 h265
- * and the size should be (ALIGN64(picWidth)>>6)*(ALIGN64(picHeight)>>6)
  *
  * - Note: It's unchangable parameter in the same sequence.
  *         It's valid only when roi_enable = 1.
@@ -6402,7 +6378,7 @@ typedef struct _mc_video_roi_params_ex {
  * for the #th CTU. The final QP of the CTUs is
  * QP(importance_level) = QP(non-ROI) - (roi_delta_qp * importance_level).
  * The larger value means the #th CTU (ROI) is more
- * important than other CTUs. It only can work with rate control.
+ * important than other CTUs. It can work with rate control.
  *
  * The CTU QP map mode supports setting QP(0 ~ 51) of the ROI
  * for the #th CTU. The setting QP is just the final QP of the CTUs.
@@ -6465,7 +6441,7 @@ typedef struct _mc_video_roi_params_ex {
  * - Note: It's changable parameter in the same sequence.
  * - Encoding: Support.
  * - Decoding: Unsupport.
- * - Default: 3
+ * - Default: 0
  */
 	hb_u32 roi_delta_qp;
 
@@ -6482,7 +6458,6 @@ typedef struct _mc_video_roi_params_ex {
 
 /**
 * Define the parameters of block encoding mode decision.
-* It's only for XJ3.
 **/
 typedef struct _mc_video_mode_decision_params {
 /**
@@ -7163,7 +7138,6 @@ typedef struct _mc_user_status {
 
 /**
 * Define the parameters of 3DNR encoding.
-* It's only for XJ3.
 **/
 typedef struct _mc_video_3dnr_enc_params {
 /**
@@ -7933,7 +7907,7 @@ extern hb_s32 hb_mm_mc_request_idr_frame(media_codec_context_t *context);
 * Request the VPS/SPS/PPS header.
 *
 * Only applied in H264 and H265 codec.
-* Support dynamic setting only for XJ3.
+* Support dynamic setting.
 *
 * @param[in]       codec context
 * @param[in]       force header mode
@@ -8445,4 +8419,4 @@ extern hb_s32 hb_mm_mc_set_status(media_codec_context_t *context,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* HB_MEDIA_CODEC_H */
+#endif /* __HB_MEDIA_CODEC_H__ */

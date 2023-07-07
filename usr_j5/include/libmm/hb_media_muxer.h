@@ -3,8 +3,8 @@
  *            Copyright 2019 Horizon Robotics, Inc.
  *                   All rights reserved.
  *************************************************************************/
-#ifndef HB_MEDIA_MUXER_H
-#define HB_MEDIA_MUXER_H
+#ifndef __HB_MEDIA_MUXER_H__
+#define __HB_MEDIA_MUXER_H__
 
 #include "hb_media_basic_types.h"
 #include "hb_media_codec.h"
@@ -385,4 +385,4 @@ extern hb_s32 hb_mm_mx_repair_stream(hb_string input_file_name,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* HB_MEDIA_MUXER_H */
+#endif /* __HB_MEDIA_MUXER_H__ */
