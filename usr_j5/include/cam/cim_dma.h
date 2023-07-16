@@ -94,6 +94,7 @@ typedef struct cim_dma_entity_s {
 	cim_dma_cfg_t cim_dma_cfg;
 	buffer_mgr_t *cim_dma_buf_mgr;
 	buffer_mgr_t *emb_buf_mgr;
+	pthread_mutex_t mutex;
 } cim_dma_entity_t;
 
 cim_dma_entity_t *cim_dma_entity_create(uint32_t pipeline_id);
