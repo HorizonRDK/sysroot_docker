@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <pthread.h>
 #include "hb_videostitch_interface.h"
+#include <logging.h>
+#include "log.h"
 
 #define PLANE_NUM (2u)
 #define LUT_NUM (2u)
@@ -21,6 +23,38 @@
 #define FLAG1 (40u)
 #define FLAG2 (248u)
 #define SRC_GAIN (256u)
+
+#define HB_TIME_CALCULATE_UNIT_1000      1000
+#define HB_TIME_CALCULATE_UNIT_1000000   1000000
+#define HB_TIME_CALCULATE_UNIT_FLOAT_1000000   1000000.0f
+
+#define J5_VIDEOSTITCH_DEBUG (1)
+
+#define MAX_VIDEOSTITCH_PRINT_LENGTH 512
+#define MAX_VIDEOSTITCH_LARGE_PRINT_LENGTH 1024
+
+typedef enum videostitch_log_level {
+		NONE = 0,
+		VIDEOSTITCH_ERR,
+		VIDEOSTITCH_WARN,
+		VIDEOSTITCH_INFO,
+		VIDEOSTITCH_DEBUG,
+		MAX_VIDEOSTITCH_LOG_LEVEL
+} videostitch_log_level_e;
+
+#if J5_VIDEOSTITCH_DEBUG
+#define videostitch_err(fmt, ...)		hb_utils_log_warpper(VIDEOSTITCH_ERR, videostitch_pr_fmt(fmt), ##__VA_ARGS__)
+#define videostitch_warn(fmt, ...)		hb_utils_log_warpper(VIDEOSTITCH_WARN, videostitch_pr_fmt(fmt), ##__VA_ARGS__)
+#define videostitch_dbg(fmt, ...)		hb_utils_log_warpper(VIDEOSTITCH_DEBUG, videostitch_pr_fmt(fmt), ##__VA_ARGS__)
+#define videostitch_info(fmt, ...)		hb_utils_log_warpper(VIDEOSTITCH_INFO, videostitch_pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define videostitch_err(fmt, ...)		hb_utils_log_warpper(VIDEOSTITCH_ERR, videostitch_pr_fmt(fmt), ##__VA_ARGS__)
+#endif
+
+#define android_printLog_dbg(fmt, ...)    android_printLog(3, NULL, fmt, ##__VA_ARGS__)
+#define android_printLog_info(fmt, ...)    android_printLog(4, NULL, fmt, ##__VA_ARGS__)
+#define android_printLog_warn(fmt, ...)    android_printLog(5, NULL, fmt, ##__VA_ARGS__)
+#define android_printLog_err(fmt, ...)    android_printLog(6, NULL, fmt, ##__VA_ARGS__)
 
 typedef struct config_roi_s {
 	union {
@@ -216,5 +250,6 @@ int32_t videostitch_deinit(void);
 
 
 void printf_runtime_roi_info(config_roi_t *tmpcft_ptr, const roi_cfg_t* cfg_roi, const result_addr_t *result_addr);
+void hb_utils_log_warpper(videostitch_log_level_e level, const char *format, ...);//no need return value for check
 
 #endif //VIDEOSTITCH_H

@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 #define phy_addr_t uint64_t
-#define ROI_MAX (4095u)
+#define ROI_MAX (500u)
 #define LAYER0_W_MAX (1920u)
 #define LAYER0_H_MAX (1080u)
 #define LAYER0_STRIDE_MAX (4096u)

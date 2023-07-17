@@ -13,6 +13,7 @@ extern "C" {
 #include "hb_vin_interface.h"
 #include "vin_log.h"
 
+
 #define CAM_MAX_NUM	16u
 #define GPIO_NUMBER 6
 #define SERDES_NUMBER 4
@@ -21,7 +22,12 @@ extern "C" {
 #define PWM_PIN_NUM  4
 #define DES_OUT_NUM_MAX 2
 #define MAX_FPS  30u
+#define DES_LINK_NUM_MAX 4
+#define I2C_BLOCK_MAX (30)
 
+#ifdef DESERIAL_DIAG
+#include "./hb_cam_diagnose.h"
+#endif
 #define RET_OK 0
 #define	RET_ERROR 1
 
@@ -46,6 +52,7 @@ extern "C" {
 #define MAJOR_VERSION_ADDR      (0x0000)
 #define MINOR_VERSION_ADDR      (0x0001)
 #define VENDOR_ID_ADDR          (0x0004)
+	#define WITHOUT_CRYSTAL     (0x5A4C)
 #define MODULE_ID_ADDR          (0x0006)
 #define MODULE_SERIAL_ADDR      (0x0008)
 #define YEAR_ADDR               (0x000C)
@@ -95,7 +102,44 @@ extern "C" {
 #define K3_2_ADDR               (0x0178)
 #define K4_2_ADDR               (0x0180)
 #define SERIAL_NUM_ADDR         (0x0188)
+#define GALAXY_CRC32_GROUP1_ADDR  (0x01C0)
+#define SD_CRC32_GROUP1_ADDR    (0x0140)
 #define CRC32_GROUP1_ADDR       (0x01C0)
+#define GALAXY_PARAMS             BIT(5)  // get galaxy params
+#define PARAMS_2                  BIT(6)  // get lce params
+
+/*lce params addr*/
+#define IMG_HEIGHT_ADDR_2         (0x001A)
+#define IMG_WIDTH_ADDR_2          (0x0018)
+#define MAJOR_VERSION_ADDR_2      (0x003C)
+#define MINOR_VERSION_ADDR_2      (0x003D)
+#define VENDOR_ID_ADDR_2          (0x0005)
+#define MODULE_SERIAL_ADDR_2      (0x001C)
+#define CAM_TYPE_ADDR_2           (0x0009)
+#define EFL_X_ADDR_2              (0x008D)
+#define EFL_Y_ADDR_2              (0x0095)
+#define COD_X_ADDR_2              (0x0065)
+#define COD_Y_ADDR_2              (0x006D)
+#define FOV_ADDR_2                (0x0010)  // 4
+#define K1_ADDR_2                 (0x009D)
+#define K2_ADDR_2                 (0x00A5)
+#define P1_ADDR_2                 (0x00CD)
+#define P2_ADDR_2                 (0x00D5)
+#define K3_ADDR_2                 (0x00AD)
+#define K4_ADDR_2                 (0x00B5)
+#define K5_ADDR_2                 (0x00BD)
+#define K6_ADDR_2                 (0x00C5)
+
+/* white balance color ratio addr */
+#define GOLDEN_D65_LCG_COLOR_RATIO_RG      (0x439)
+#define D65_LCG_COLOR_RATIO_RG             (0x451)
+#define COLOR_RATIO_CHECKSUM               (0x469)
+/* v2 only for LCE */
+#define GOLDEN_D65_LCG_COLOR_RATIO_RG_V2   (0x12B)
+#define D65_LCG_COLOR_RATIO_RG_V2          (0x143)
+#define COLOR_RATIO_CHECKSUM_V2            (0x15B)
+
+#define COLOR_RATIO_NUM                    (12)
 
 /* not use now*/
 enum GPIO_DEF_VALUE{
@@ -122,6 +166,56 @@ typedef struct spi_data {
 	int32_t spi_cs;
 	uint32_t spi_speed;
 }spi_data_t;
+
+#ifdef CAMERA_SENSOR_DIAG
+typedef struct fcnt_tv_s {
+	struct timespec tv;
+	uint32_t fcnt;
+} fcnt_tv_t;
+
+typedef struct fcnt_check_s {
+	fcnt_tv_t fcnt_tv;
+	int running;
+} fcnt_check_t;
+
+typedef union sensor_status {
+	uint32_t value;
+	struct {
+		uint32_t stream_off:1;
+		uint32_t voltage_state:1;
+		uint32_t fps_state:1;
+		uint32_t temp_state:1;
+		uint32_t row_column_id_state:1;
+		uint32_t pll_clock_state:1;
+		uint32_t i2c_crc_state:1;
+		uint32_t sccb_state:1;
+		uint32_t ram_crc_state:1;
+		uint32_t rom_crc_state:1;
+		uint32_t online_pixel_state:1;
+		uint32_t test_pattern_state:1;
+		uint32_t reserved1:4;
+	};
+} sensor_status_u;
+
+typedef union diag_mask {
+	uint32_t value;
+	struct {
+		uint32_t stream_check:1;
+		uint32_t voltage_check:1;
+		uint32_t frame_count_check:1;
+		uint32_t temperature_check:1;
+		uint32_t row_column_id_check:1;
+		uint32_t pll_clock_check:1;
+		uint32_t i2c_crc_check:1;
+		uint32_t sccb_check:1;
+		uint32_t ram_crc_check:1;
+		uint32_t rom_crc_check:1;
+		uint32_t online_pixel_check:1;
+		uint32_t test_pattern_check:1;
+		uint32_t reserved:4;
+	};
+} diag_mask_u;
+#endif
 
 typedef struct sensor_info_s {
 	uint32_t port;
@@ -168,6 +262,11 @@ typedef struct sensor_info_s {
 	int32_t start_cnt;
 	uint32_t bus_timeout;
 	uint32_t reserved[16];
+#ifdef CAMERA_SENSOR_DIAG
+	uint32_t sensor_errb;
+	diag_mask_u diag_mask;
+	sensor_status_u sensor_status;
+#endif
 }sensor_info_t;
 
 typedef struct deserial_info_s {
@@ -189,7 +288,27 @@ typedef struct deserial_info_s {
 	pthread_t init_thread_id;
 	int32_t thread_created;
 	uint32_t bus_timeout;
+	uint8_t gmsl_speed[DES_LINK_NUM_MAX];
+	uint32_t data_type[DES_LINK_NUM_MAX];
+	char  *serial_type[DES_LINK_NUM_MAX];
 	uint32_t reserved[16];
+#ifdef DESERIAL_DIAG
+	int board_id;
+	uint32_t ccd_poll;
+	uint32_t ccd_pin_num;
+	ccd_pin_info_t pin[PIN_COUNT];
+	pthread_t errb_pid;
+	int32_t errb_thread_status;
+	MUTEX_HANDLE(mutex_status);
+	COND_HANDLE(cond_status);
+	vin_queue *q_msg;
+	uint32_t reg_ops_num;
+	register_general_fun_t *reg_ops;
+	uint32_t reg_poll_ops_num;
+	register_general_fun_t *reg_poll_ops;
+	user_info_t listner_callback[MAX_USER];
+	MUTEX_HANDLE(listen_mutex);
+#endif
 }deserial_info_t;
 
 typedef struct lpwm_info_s {
@@ -218,6 +337,13 @@ typedef struct board_info_s {
 	sensor_info_t sensor_info[CAM_MAX_NUM];
 	int32_t board_init_ret;
 	uint32_t init_in_seq;
+#ifdef CAMERA_SENSOR_DIAG
+	uint32_t monitor_period_ms;
+#endif
+#ifdef DESERIAL_DIAG
+	// int board_id;
+	camera_component_diagnose_t ccd;
+#endif
 }board_info_t;
 
 #define HAL_LINE_CONTROL       0x00000001
@@ -286,6 +412,7 @@ typedef struct {
 	int32_t (*stream_off)(sensor_info_t *sensor_info);
 	int32_t (*stream_on)(sensor_info_t *sensor_info);
 	int32_t (*parse_embed_data)(sensor_info_t *sensor_info, char* embed_raw, embed_data_info_t* embed_info);
+	int32_t (*hotplug_init)(sensor_info_t *sensor_info);
 }sensor_module_t;
 
 typedef struct {

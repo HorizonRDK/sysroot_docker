@@ -582,6 +582,8 @@ typedef enum enum_isp_cmd_e
 	ISP_CMD_SYSTEM_AWB_BLUE_GAIN_ACTUAL                 = 0x0000006E,
 	ISP_CMD_IN_BUF_NOCACHED 							= 0x0000006F,
 	ISP_CMD_OUT_BUF_NOCACHED							= 0x00000070,
+	ISP_CMD_SYSTEM_MIN_SENSOR_ANALOG_GAIN_PARAM                                     = 0x00000071,
+	ISP_CMD_SYSTEM_MIN_SENSOR_DIGITAL_GAIN_PARAM                                    = 0x00000072,
 
 	ISP_CMD_BUTT
 }isp_cmd_e;
