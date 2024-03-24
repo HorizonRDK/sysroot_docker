@@ -1,4 +1,4 @@
-English| [简体中文](./README_cn.md)
+[English](./README.md) | 简体中文
 
 # Customization Points
 
@@ -48,7 +48,9 @@ The following macros can be defined:
 
 *   `GTEST_HAS_CXXABI_H_`
 
-### Exporting API symbols:*   `GTEST_API_` - Specifier for exported symbols.
+### Exporting API symbols:
+
+*   `GTEST_API_` - Specifier for exported symbols.
 
 ## Header `gtest-printers.h`
 
