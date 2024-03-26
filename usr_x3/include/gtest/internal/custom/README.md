@@ -1,5 +1,3 @@
-English| [简体中文](./README_cn.md)
-
 # Customization Points
 
 The custom directory is an injection point for custom user configurations.
@@ -48,7 +46,9 @@ The following macros can be defined:
 
 *   `GTEST_HAS_CXXABI_H_`
 
-### Exporting API symbols:*   `GTEST_API_` - Specifier for exported symbols.
+### Exporting API symbols:
+
+*   `GTEST_API_` - Specifier for exported symbols.
 
 ## Header `gtest-printers.h`
 
